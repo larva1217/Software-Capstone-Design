@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>뉴스 피드 · Markets</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="top-bar">
+      <div class="top-bar__brand">
+        <a href="index.html">
+          <span class="logo" aria-hidden="true">◇</span>
+          <span class="brand-name">Markets</span>
+        </a>
+      </div>
+
+      <nav class="main-nav" aria-label="주 메뉴">
+          <a th:href="@{/}" class="nav-tab" aria-current="page">시장 지표</a>
+          <a th:href="@{/chart}" class="nav-tab">주식 차트</a>
+          <a th:href="@{/news}" class="nav-tab is-active">뉴스 피드</a>
+          <a th:href="@{/community}" class="nav-tab">커뮤니티</a>
+      </nav>
+
+        <div class="top-bar__actions">
+            <button class="icon-btn">🔔</button>
+            <button class="icon-btn">👤</button>
+            <button class="icon-btn" id="btn-theme">🌙</button>
+        </div>
+
+    </header>
+
+    <main class="content">
+      <section class="view" id="view-news">
+        <div class="page-head">
+          <h1>뉴스 피드</h1>
+        </div>
+          <div class="news-list" id="news-list">
+              <article class="news-item" th:each="news : ${headlines}" style="border-bottom: 1px solid #2a2e39; padding: 20px;">
+                  <div class="news-item__meta">
+                      <span class="news-item__press" th:text="${news.press}" style="color: #2962ff;">언론사</span>
+                  </div>
+
+                  <a th:href="${news.link}" target="_blank" style="text-decoration: none;">
+                      <h3 class="news-item__title" th:text="${news.title}" style="color: #d1d4dc;">뉴스 제목</h3>
+                  </a>
+
+                  <p class="news-item__summary" th:text="${news.description}" style="color: #848e9c;">뉴스 요약 내용</p>
+
+                  <div class="news-item__foot">
+                      <span class="news-item__tag">경제</span>
+                      <span class="news-item__more">원문 읽기 ↗</span>
+                  </div>
+              </article>
+          </div>
+      </section>
+    </main>
+
+
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script th:src="@{/common.js}"></script>
+
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>주식 차트 Markets</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" th:href="@{/styles.css}" />
+    <script src="https://s3.tradingview.com/tv.js"></script>
+
+    <style>
+        /* 레이아웃: 차트와 주문 패널 나란히 배치 */
+        .chart-layout {
+            display: flex;
+            gap: 20px;
+            margin-top: 24px;
+            align-items: flex-start;
+        }
+
+        .chart-container-wrapper {
+            flex: 3; /* 차트 비중 확대 */
+            min-width: 0;
+        }
+
+        #global-chart-container {
+            width: 100% !important;
+            height: 650px;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #131722;
+            border: 1px solid #2a2e39;
+        }
+
+        /* 주문 패널 스타일 */
+        .order-panel {
+            flex: 1;
+            background: #1e222d;
+            border: 1px solid #2a2e39;
+            border-radius: 12px;
+            padding: 24px;
+            color: #d1d4dc;
+            position: sticky;
+            top: 20px;
+        }
+
+        .order-panel h2 { font-size: 18px; margin-bottom: 20px; color: #fff; }
+
+        .order-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+        .tab-btn {
+            flex: 1; padding: 10px; border: none; border-radius: 4px;
+            cursor: pointer; background: #2a2e39; color: #848e9c; font-weight: 600;
+        }
+        .tab-btn.active.buy { background: #2ebd85; color: white; }
+        .tab-btn.active.sell { background: #f6465d; color: white; }
+
+        .input-group { margin-bottom: 16px; }
+        .input-group label { display: block; font-size: 12px; margin-bottom: 6px; color: #848e9c; }
+        .input-group input {
+            width: 100%; padding: 12px; background: #131722; border: 1px solid #3b4352;
+            color: white; border-radius: 4px; box-sizing: border-box;
+        }
+
+        .order-summary {
+            margin: 20px 0; padding-top: 15px; border-top: 1px solid #2a2e39;
+            display: flex; justify-content: space-between; font-size: 14px;
+        }
+
+        .btn-execute {
+            width: 100%; padding: 16px; border: none; border-radius: 4px;
+            font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .btn-buy { background: #2ebd85; color: white; }
+        .btn-sell { background: #f6465d; color: white; }
+
+        /* 포트폴리오 섹션 */
+        .portfolio-section { margin-top: 40px; padding: 24px; background: #1e222d; border-radius: 12px; border: 1px solid #2a2e39; }
+        .portfolio-section h2 { font-size: 20px; margin-bottom: 20px; color: #fff; }
+
+        .portfolio-table { width: 100%; border-collapse: collapse; color: #d1d4dc; }
+        .portfolio-table th { text-align: left; padding: 12px; border-bottom: 2px solid #2a2e39; color: #848e9c; font-size: 13px; }
+        .portfolio-table td { padding: 16px 12px; border-bottom: 1px solid #2a2e39; }
+        .text-up { color: #2ebd85; }
+        .text-down { color: #f6465d; }
+
+        .content { width: 100% !important; max-width: 1600px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
+    </style>
+</head>
+
+<body>
+<div class="app">
+    <header class="top-bar">
+        <div class="top-bar__brand">
+            <a th:href="@{/}">
+                <span class="logo">◇</span>
+                <span class="brand-name">Markets</span>
+            </a>
+        </div>
+        <nav class="main-nav">
+            <a th:href="@{/}" class="nav-tab">시장 지표</a>
+            <a th:href="@{/chart}" class="nav-tab is-active">주식 차트</a>
+            <a th:href="@{/news}" class="nav-tab">뉴스 피드</a>
+            <a th:href="@{/community}" class="nav-tab">커뮤니티</a>
+        </nav>
+        <div class="top-bar__actions">
+            <button class="icon-btn">🔔</button>
+            <button class="icon-btn">👤</button>
+            <button class="icon-btn" id="btn-theme">🌙</button>
+        </div>
+    </header>
+
+    <main class="content">
+        <div class="page-head">
+            <h1>주식 차트</h1>
+            <p class="muted">NVDA · NVIDIA Corporation</p>
+        </div>
+
+        <div class="chart-layout">
+            <div class="chart-container-wrapper">
+                <div id="global-chart-container"></div>
+            </div>
+
+            <aside class="order-panel">
+                <div class="user-balance" style="margin-bottom: 20px; padding: 15px; background: #131722; border-radius: 8px; border: 1px solid #2a2e39;">
+                    <div style="font-size: 12px; color: #848e9c; margin-bottom: 6px;">사용 가능 잔액</div>
+                    <strong style="color: #fff; font-size: 18px;"
+                            th:text="${#numbers.formatInteger(user.balance, 3, 'COMMA')} + ' KRW'">
+                        10,000,000 KRW
+                    </strong>
+                </div>
+                <div class="symbol-selector" style="display: flex; gap: 5px; margin-bottom: 15px;">
+                    <button type="button" onclick="changeSymbol('NASDAQ:NVDA')" class="tab-btn active">NVDA</button>
+                    <button type="button" onclick="changeSymbol('NASDAQ:AAPL')" class="tab-btn">AAPL</button>
+                    <button type="button" onclick="changeSymbol('NASDAQ:TSLA')" class="tab-btn">TSLA</button>
+                    <button type="button" onclick="changeSymbol('NASDAQ:AMZN')" class="tab-btn">AMZN</button>
+                </div>
+                <h2>주문하기</h2>
+                <div class="order-tabs">
+                    <button class="tab-btn active buy" id="tab-buy">매수</button>
+                    <button class="tab-btn" id="tab-sell">매도</button>
+                </div>
+                <div class="input-group">
+                    <label>가격 (USD)</label>
+                    <input type="number" id="order-price" value="177.39" readonly />
+                </div>
+                <div class="input-group">
+                    <label>수량 (주)</label>
+                    <input type="number" id="order-qty" value="1" min="1" />
+                </div>
+                <div class="order-summary">
+                    <span>총 주문금액</span>
+                    <strong id="order-total">177.39 USD</strong>
+                </div>
+                <button class="btn-execute btn-buy" id="btn-order-exec">매수하기</button>
+            </aside>
+        </div>
+
+        <section class="portfolio-section">
+            <h2>내 보유 종목</h2>
+            <table class="portfolio-table">
+                <thead>
+                <tr>
+                    <th>종목</th>
+                    <th>보유수량</th>
+                    <th>평균단가</th>
+                    <th>현재가</th>
+                    <th>수익률</th>
+                    <th>평가금액</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="p : ${portfolios}">
+                    <td><strong th:text="${p.tickerSymbol}">NVDA</strong></td>
+                    <td><span th:text="${p.quantity}">0</span> 주</td>
+                    <td>$ <span th:text="${#numbers.formatDecimal(p.averagePrice, 1, 'COMMA', 2, 'POINT')}">0</span></td>
+                    <td>$ <span class="current-price" th:text="${#numbers.formatDecimal(p.averagePrice, 1, 'COMMA', 2, 'POINT')}">0</span></td>
+                    <td class="text-up">+0.00%</td>
+                    <td>$ <span th:text="${#numbers.formatDecimal(p.quantity * p.averagePrice, 1, 'COMMA', 2, 'POINT')}">0</span></td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(portfolios)}">
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #848e9c;">보유 중인 종목이 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+
+<script th:src="@{/common.js}"></script>
+<script th:src="@{/app-news.js}"></script>
+
+<script>
+    let tvWidget;
+
+    // [1] 총액 계산 함수: 어디서든 호출 가능하게 최상단 배치
+    function updateTotal() {
+        const priceInput = document.getElementById('order-price');
+        const qtyInput = document.getElementById('order-qty');
+        const totalText = document.getElementById('order-total');
+
+        if (priceInput && qtyInput && totalText) {
+            const price = parseFloat(priceInput.value) || 0;
+            const qty = parseInt(qtyInput.value) || 0;
+            const total = (price * qty).toFixed(2);
+            totalText.innerText = total + " USD";
+        }
+    }
+
+    // [2] 가격 업데이트 함수: 백엔드에서 네이버 시세를 가져옴
+    function updatePriceAndUI(fullSymbol) {
+        const titleP = document.querySelector('.page-head p');
+        if (titleP) titleP.innerText = fullSymbol;
+
+        const cleanTicker = fullSymbol.includes(':') ? fullSymbol.split(':')[1] : fullSymbol;
+
+        fetch(`/api/stock/price?symbol=${cleanTicker}`)
+            .then(res => res.json())
+            .then(data => {
+                const priceInput = document.getElementById('order-price');
+                if (priceInput && data.currentPrice) {
+                    const price = parseFloat(data.currentPrice).toFixed(2);
+                    priceInput.value = price;
+                    priceInput.defaultValue = price;
+
+                    // 가격 세팅 후 즉시 총액 계산
+                    updateTotal();
+                }
+            })
+            .catch(err => console.error("네이버 시세 연동 실패:", err));
+    }
+
+    // [3] 차트 생성 함수
+    function renderChart(symbol) {
+        tvWidget = new TradingView.widget({
+            "autosize": true,
+            "symbol": symbol,
+            "interval": "D",
+            "timezone": "Asia/Seoul",
+            "theme": "dark",
+            "container_id": "global-chart-container",
+            "locale": "ko",
+            "allow_symbol_change": true
+        });
+        // 차트 그리면서 가격도 같이 업데이트
+        updatePriceAndUI(symbol);
+    }
+
+    // [4] 버튼 클릭 시 호출되는 함수
+    function changeSymbol(newSymbol) {
+        console.log("종목 변경 시도:", newSymbol);
+        renderChart(newSymbol);
+    }
+
+    window.addEventListener('load', function() {
+    renderChart("NASDAQ:NVDA"); // 시작은 엔비디아
+
+    // 1. 기존 요소들 가져오기 (중복 선언 방지)
+    const qtyInput = document.getElementById('order-qty');
+    const buyTab = document.getElementById('tab-buy');
+    const sellTab = document.getElementById('tab-sell');
+    const execBtn = document.getElementById('btn-order-exec');
+    const tickerP = document.querySelector('.page-head p');
+
+    // 2. 수량 입력 칸 이벤트 등록
+    if (qtyInput) {
+        qtyInput.addEventListener('input', updateTotal);
+    }
+
+    // 3. 매수/매도 탭 UI 전환 로직
+    if(buyTab && sellTab && execBtn) {
+        buyTab.onclick = () => {
+            buyTab.classList.add('active', 'buy');
+            sellTab.classList.remove('active', 'sell');
+            execBtn.innerText = "매수하기";
+            execBtn.className = "btn-execute btn-buy";
+        };
+        sellTab.onclick = () => {
+            sellTab.classList.add('active', 'sell');
+            buyTab.classList.remove('active', 'buy');
+            execBtn.innerText = "매도하기";
+            execBtn.className = "btn-execute btn-sell";
+        };
+    }
+
+    // 4. [핵심] 매수/매도 버튼 클릭 시 서버 호출 로직 (중복 선언 없이 바로 사용)
+    if (execBtn) {
+        execBtn.onclick = () => {
+        // 1. 데이터 추출 (공백 제거 및 확인)
+        const fullSymbol = tickerP.innerText.split('·')[0].trim(); // "NVDA"만 추출 시도
+        const ticker = fullSymbol.includes(':') ? fullSymbol.split(':')[1] : fullSymbol;
+        const quantity = document.getElementById('order-qty').value;
+        const price = Math.floor(document.getElementById('order-price').value); // 소수점 제거 (long 타입 대응)
+
+        const isBuy = execBtn.innerText === "매수하기";
+
+        // 주소 확인: /api/trade/buy 인지 /trade/buy 인지 컨트롤러와 맞춰야 함!
+        const endpoint = isBuy ? "/api/trade/buy" : "/api/trade/sell";
+
+        console.log("보내는 데이터:", {ticker, quantity, price}); // 디버깅용
+
+        fetch(`${endpoint}?ticker=${ticker}&quantity=${quantity}&price=${price}`, {
+            method: 'POST'
+        })
+        .then(async response => {
+            const text = await response.text();
+            if (response.ok) {
+                alert(text);
+                location.reload();
+            } else {
+                // 서버 에러 메시지(잔액 부족 등)를 알림창에 띄움
+                alert("거래 실패: " + text);
+            }
+        })
+        .catch(error => alert("네트워크 에러: " + error.message));
+    };
+    }
+});
+</script>
+</body>
+</html>
