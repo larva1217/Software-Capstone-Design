@@ -60,12 +60,35 @@
 - 외부 주식 데이터 API 연동  
 
 ---
+## 📂 파일 구조 및 위치 설명
 
-## 📚 기대 효과
-- 투자 초보자가 안전하게 투자 경험을 학습  
-- 데이터 기반 투자 의사결정 능력 향상  
-- 웹 애플리케이션 개발 역량 및 실무 경험 강화  
+### 🔹 Backend (서버 로직)
+- 위치: `src/main/java/stock/cpastonedesign`
+
+#### 📁 domain (엔티티)
+
+#### 📁 repository (DB 접근)
+
+#### 📁 service (비즈니스 로직)
+
+#### 📁 web
+
+#### 🚀 메인 실행 클래스
+- `CpastonedesignApplication`
 
 ---
+
+### 🔹 Frontend (화면 구성)
+- 위치: `src/main/resources`
+
+#### 📁 templates (HTML)
+
+#### 📁 static (정적 파일)
+
+---
+
+### 🔹 Database (DB 설정)
+- 위치: `src/main/resources`
+
 
 
