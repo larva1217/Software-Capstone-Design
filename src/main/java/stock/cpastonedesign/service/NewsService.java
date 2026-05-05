@@ -1,8 +1,8 @@
 package stock.cpastonedesign.service;
 
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;    // org.jsoup 패키지
-import org.jsoup.nodes.Element;     // org.jsoup 패키지
+import org.jsoup.nodes.Document;    
+import org.jsoup.nodes.Element;    
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
