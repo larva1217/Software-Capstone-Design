@@ -11,7 +11,7 @@ public class PageController {
         return "index";
     }
 
-    @GetMapping("/community")
+    //@GetMapping("/community")
     public String community(){
         return "community";
     }
@@ -25,4 +25,5 @@ public class PageController {
     public String shart(){
         return "chart";
     }
+
 }
