@@ -102,6 +102,21 @@
                     >
                         게시글 내용
                     </p>
+
+                    <form
+                            th:action="@{/community/delete/{id}(id=${post.id})}"
+                            method="post"
+                            style="margin-top: 10px;"
+                    >
+                        <button
+                                type="submit"
+                                class="btn"
+                                style="background: #ff4d4f; color: white;"
+                        >
+                            삭제
+                        </button>
+                    </form>
+
                 </article>
             </div>
         </section>
