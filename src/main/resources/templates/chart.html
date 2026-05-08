@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
     <link rel="stylesheet" th:href="@{/styles.css}" />
+
+    <!-- TradingView 라이브러리 -->
     <script src="https://s3.tradingview.com/tv.js"></script>
 
     <style>
@@ -49,6 +51,35 @@
 
         .order-panel h2 { font-size: 18px; margin-bottom: 20px; color: #fff; }
 
+        /* 🔥 추가된 검색창 스타일 */
+        .search-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .search-group input {
+            flex: 1;
+            padding: 12px;
+            background: #131722;
+            border: 1px solid #3b4352;
+            color: white;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .search-group button {
+            padding: 10px 16px;
+            background: #2962FF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .search-group button:hover {
+            background: #1E53E5;
+        }
+
         .order-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
         .tab-btn {
             flex: 1; padding: 10px; border: none; border-radius: 4px;
@@ -87,6 +118,44 @@
         .text-down { color: #f6465d; }
 
         .content { width: 100% !important; max-width: 1600px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
+
+        /* AI 분석 패널 스타일 */
+        .ai-panel {
+            background: #1e222d;
+            border: 1px solid #2a2e39;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 20px;
+        }
+        .ai-panel h3 {
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ai-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #d1d4dc;
+            background: #131722;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #3b4352;
+        }
+        .ai-loading {
+            text-align: center;
+            color: #2ebd85;
+            font-weight: bold;
+            padding: 20px 0;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
     </style>
 </head>
 
@@ -115,12 +184,21 @@
     <main class="content">
         <div class="page-head">
             <h1>주식 차트</h1>
-            <p class="muted">NVDA · NVIDIA Corporation</p>
+            <p class="muted">모든 투자에 대한 책임은 투자자 본인에게 있습니다.</p>
         </div>
 
         <div class="chart-layout">
             <div class="chart-container-wrapper">
+                <!-- 트레이딩뷰 차트 영역 -->
                 <div id="global-chart-container"></div>
+
+                <!-- AI 분석 패널 영역 -->
+                <div class="ai-panel">
+                    <h3>✨ AI 종목 요약 및 뉴스 분석</h3>
+                    <div id="ai-content" class="ai-content">
+                        종목을 검색하면 AI가 실시간 분석을 시작합니다.
+                    </div>
+                </div>
             </div>
 
             <aside class="order-panel">
@@ -131,12 +209,13 @@
                         10,000,000 KRW
                     </strong>
                 </div>
-                <div class="symbol-selector" style="display: flex; gap: 5px; margin-bottom: 15px;">
-                    <button type="button" onclick="changeSymbol('NASDAQ:NVDA')" class="tab-btn active">NVDA</button>
-                    <button type="button" onclick="changeSymbol('NASDAQ:AAPL')" class="tab-btn">AAPL</button>
-                    <button type="button" onclick="changeSymbol('NASDAQ:TSLA')" class="tab-btn">TSLA</button>
-                    <button type="button" onclick="changeSymbol('NASDAQ:AMZN')" class="tab-btn">AMZN</button>
+
+                <!-- 🔥 중앙 제어 1: 종목 검색창 -->
+                <div class="search-group">
+                    <input id="symbolSearch" placeholder="종목 검색 (예: TSLA, AAPL)" />
+                    <button onclick="searchSymbol()">검색</button>
                 </div>
+
                 <h2>주문하기</h2>
                 <div class="order-tabs">
                     <button class="tab-btn active buy" id="tab-buy">매수</button>
@@ -144,7 +223,7 @@
                 </div>
                 <div class="input-group">
                     <label>가격 (USD)</label>
-                    <input type="number" id="order-price" value="177.39" readonly />
+                    <input type="number" id="order-price" value="0" readonly />
                 </div>
                 <div class="input-group">
                     <label>수량 (주)</label>
@@ -152,7 +231,7 @@
                 </div>
                 <div class="order-summary">
                     <span>총 주문금액</span>
-                    <strong id="order-total">177.39 USD</strong>
+                    <strong id="order-total">0.00 USD</strong>
                 </div>
                 <button class="btn-execute btn-buy" id="btn-order-exec">매수하기</button>
             </aside>
@@ -194,9 +273,106 @@
 <script th:src="@{/app-news.js}"></script>
 
 <script>
-    let tvWidget;
+    // 🧠 1. 상태 변수
+    let tvWidget = null;
+    let currentSymbol = "NASDAQ:NVDA";
 
-    // [1] 총액 계산 함수: 어디서든 호출 가능하게 최상단 배치
+    // 🔍 2. 검색 기능 추가
+    function searchSymbol() {
+        const input = document.getElementById("symbolSearch").value.trim().toUpperCase();
+        if (!input) return;
+
+        // 거래소 코드가 없으면 기본으로 NASDAQ 붙이기
+        const symbol = input.includes(":") ? input : "NASDAQ:" + input;
+        changeSymbol(symbol);
+    }
+
+    // ⌨️ Enter 검색 지원
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("symbolSearch");
+        if (searchInput) {
+            searchInput.addEventListener("keypress", function (e) {
+                if (e.key === "Enter") {
+                    searchSymbol();
+                }
+            });
+        }
+    });
+
+    // 🔁 3. 종목 변경 핵심 로직 (중앙 통제)
+    function changeSymbol(newSymbol) {
+        console.log("종목 변경:", newSymbol);
+        currentSymbol = newSymbol;
+
+        // 탭 버튼 UI 업데이트 (검색한 종목이 탭에 있으면 활성화)
+        const cleanNewTicker = newSymbol.includes(":") ? newSymbol.split(":")[1] : newSymbol;
+        document.querySelectorAll('.symbol-selector .tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.innerText === cleanNewTicker) {
+                btn.classList.add('active');
+            }
+        });
+
+        // 차트 및 데이터 새로고침
+        renderChart(currentSymbol);
+    }
+
+    // 📊 4. 차트 렌더링 (정리 버전)
+    function renderChart(symbol) {
+        const container = document.getElementById("global-chart-container");
+
+        // 기존 widget 깔끔하게 제거
+        if (tvWidget) {
+            try {
+                tvWidget.remove?.();
+            } catch (e) {
+                console.log("widget 제거 실패 (무시 가능)");
+            }
+            tvWidget = null;
+        }
+
+        container.innerHTML = "";
+
+        // 새 차트 생성
+        tvWidget = new TradingView.widget({
+            autosize: true,
+            symbol: symbol,
+            interval: "D",
+            timezone: "Asia/Seoul",
+            theme: "dark",
+            container_id: "global-chart-container",
+            locale: "ko",
+            allow_symbol_change: false // 🔥 검색창을 통해서만 바꾸도록 차트 내 검색 차단
+        });
+
+        // 🔥 핵심: 차트 렌더링 시 무조건 가격과 AI를 동기화
+        updatePriceAndUI(symbol);
+        fetchAIAnalysis(symbol);
+    }
+
+    // 🤖 5. AI 연동
+    function fetchAIAnalysis(fullSymbol) {
+        const cleanTicker = fullSymbol.includes(":") ? fullSymbol.split(":")[1] : fullSymbol;
+        const aiContent = document.getElementById("ai-content");
+
+        aiContent.innerHTML = `<div class="ai-loading">🤖 AI 분석 중... (${cleanTicker}) ⏳</div>`;
+
+        fetch(`/api/ai/analyze?ticker=${cleanTicker}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.analysisResult) {
+                    aiContent.innerHTML = data.analysisResult;
+                } else {
+                    aiContent.innerHTML = "<div style='color: #f6465d;'>AI 분석 결과를 가져오지 못했습니다.</div>";
+                }
+            })
+            .catch(err => {
+                console.error("AI 연동 에러:", err);
+                aiContent.innerHTML = "<div style='color: #f6465d;'>AI 분석 서버와 연결할 수 없습니다.</div>";
+            });
+    }
+
+    // 💵 총액 계산 함수
     function updateTotal() {
         const priceInput = document.getElementById('order-price');
         const qtyInput = document.getElementById('order-qty');
@@ -210,7 +386,7 @@
         }
     }
 
-    // [2] 가격 업데이트 함수: 백엔드에서 네이버 시세를 가져옴
+    // 📈 가격 업데이트 함수
     function updatePriceAndUI(fullSymbol) {
         const titleP = document.querySelector('.page-head p');
         if (titleP) titleP.innerText = fullSymbol;
@@ -225,100 +401,75 @@
                     const price = parseFloat(data.currentPrice).toFixed(2);
                     priceInput.value = price;
                     priceInput.defaultValue = price;
-
-                    // 가격 세팅 후 즉시 총액 계산
                     updateTotal();
                 }
             })
-            .catch(err => console.error("네이버 시세 연동 실패:", err));
+            .catch(err => {
+                console.warn("시세 연동 중 (백엔드 미연결):", err);
+                updateTotal();
+            });
     }
 
-    // [3] 차트 생성 함수
-    function renderChart(symbol) {
-        tvWidget = new TradingView.widget({
-            "autosize": true,
-            "symbol": symbol,
-            "interval": "D",
-            "timezone": "Asia/Seoul",
-            "theme": "dark",
-            "container_id": "global-chart-container",
-            "locale": "ko",
-            "allow_symbol_change": true
-        });
-        // 차트 그리면서 가격도 같이 업데이트
-        updatePriceAndUI(symbol);
-    }
-
-    // [4] 버튼 클릭 시 호출되는 함수
-    function changeSymbol(newSymbol) {
-        console.log("종목 변경 시도:", newSymbol);
-        renderChart(newSymbol);
-    }
-
+    // 🚀 페이지 로드 및 이벤트 리스너 세팅
     window.addEventListener('load', function() {
-    renderChart("NASDAQ:NVDA"); // 시작은 엔비디아
+        // 최초 시작 렌더링
+        renderChart(currentSymbol);
 
-    // 1. 기존 요소들 가져오기 (중복 선언 방지)
-    const qtyInput = document.getElementById('order-qty');
-    const buyTab = document.getElementById('tab-buy');
-    const sellTab = document.getElementById('tab-sell');
-    const execBtn = document.getElementById('btn-order-exec');
-    const tickerP = document.querySelector('.page-head p');
+        const qtyInput = document.getElementById('order-qty');
+        const buyTab = document.getElementById('tab-buy');
+        const sellTab = document.getElementById('tab-sell');
+        const execBtn = document.getElementById('btn-order-exec');
+        const tickerP = document.querySelector('.page-head p');
 
-    // 2. 수량 입력 칸 이벤트 등록
-    if (qtyInput) {
-        qtyInput.addEventListener('input', updateTotal);
-    }
+        // 수량 변경 시 총액 업데이트
+        if (qtyInput) {
+            qtyInput.addEventListener('input', updateTotal);
+        }
 
-    // 3. 매수/매도 탭 UI 전환 로직
-    if(buyTab && sellTab && execBtn) {
-        buyTab.onclick = () => {
-            buyTab.classList.add('active', 'buy');
-            sellTab.classList.remove('active', 'sell');
-            execBtn.innerText = "매수하기";
-            execBtn.className = "btn-execute btn-buy";
-        };
-        sellTab.onclick = () => {
-            sellTab.classList.add('active', 'sell');
-            buyTab.classList.remove('active', 'buy');
-            execBtn.innerText = "매도하기";
-            execBtn.className = "btn-execute btn-sell";
-        };
-    }
+        // 매수/매도 탭 전환
+        if(buyTab && sellTab && execBtn) {
+            buyTab.onclick = () => {
+                buyTab.classList.add('active', 'buy');
+                sellTab.classList.remove('active', 'sell');
+                execBtn.innerText = "매수하기";
+                execBtn.className = "btn-execute btn-buy";
+            };
+            sellTab.onclick = () => {
+                sellTab.classList.add('active', 'sell');
+                buyTab.classList.remove('active', 'buy');
+                execBtn.innerText = "매도하기";
+                execBtn.className = "btn-execute btn-sell";
+            };
+        }
 
-    // 4. [핵심] 매수/매도 버튼 클릭 시 서버 호출 로직 (중복 선언 없이 바로 사용)
-    if (execBtn) {
-        execBtn.onclick = () => {
-        // 1. 데이터 추출 (공백 제거 및 확인)
-        const fullSymbol = tickerP.innerText.split('·')[0].trim(); // "NVDA"만 추출 시도
-        const ticker = fullSymbol.includes(':') ? fullSymbol.split(':')[1] : fullSymbol;
-        const quantity = document.getElementById('order-qty').value;
-        const price = Math.floor(document.getElementById('order-price').value); // 소수점 제거 (long 타입 대응)
+        // 주문 실행 버튼
+        if (execBtn) {
+            execBtn.onclick = () => {
+                // 중앙 통제 변수 사용
+                const fullSymbol = currentSymbol;
+                const ticker = fullSymbol.includes(':') ? fullSymbol.split(':')[1] : fullSymbol;
+                const quantity = document.getElementById('order-qty').value;
+                const price = Math.floor(document.getElementById('order-price').value);
 
-        const isBuy = execBtn.innerText === "매수하기";
+                const isBuy = execBtn.innerText === "매수하기";
+                const endpoint = isBuy ? "/api/trade/buy" : "/api/trade/sell";
 
-        // 주소 확인: /api/trade/buy 인지 /trade/buy 인지 컨트롤러와 맞춰야 함!
-        const endpoint = isBuy ? "/api/trade/buy" : "/api/trade/sell";
-
-        console.log("보내는 데이터:", {ticker, quantity, price}); // 디버깅용
-
-        fetch(`${endpoint}?ticker=${ticker}&quantity=${quantity}&price=${price}`, {
-            method: 'POST'
-        })
-        .then(async response => {
-            const text = await response.text();
-            if (response.ok) {
-                alert(text);
-                location.reload();
-            } else {
-                // 서버 에러 메시지(잔액 부족 등)를 알림창에 띄움
-                alert("거래 실패: " + text);
-            }
-        })
-        .catch(error => alert("네트워크 에러: " + error.message));
-    };
-    }
-});
+                fetch(`${endpoint}?ticker=${ticker}&quantity=${quantity}&price=${price}`, {
+                    method: 'POST'
+                })
+                .then(async response => {
+                    const text = await response.text();
+                    if (response.ok) {
+                        alert(text);
+                        location.reload();
+                    } else {
+                        alert("거래 실패: " + text);
+                    }
+                })
+                .catch(error => alert("네트워크 에러: " + error.message));
+            };
+        }
+    });
 </script>
 </body>
 </html>
