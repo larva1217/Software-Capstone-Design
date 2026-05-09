@@ -1,84 +1,76 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>시장 지표 · Markets</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>시장 지표 · Markets</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="app">
+<div class="app">
     <header class="top-bar">
-      <div class="top-bar__brand">
-        <a href="index.html" th:href="@{/}">
-          <span class="logo" aria-hidden="true">◇</span>
-          <span class="brand-name">Markets</span>
-        </a>
-      </div>
-      <nav class="main-nav" aria-label="주 메뉴">
-        <a th:href="@{/}" class="nav-tab is-active" aria-current="page">시장 지표</a>
-        <a th:href="@{/chart}" class="nav-tab">주식 차트</a>
-        <a th:href="@{/news}" class="nav-tab">뉴스 피드</a>
-        <a th:href="@{/community}" class="nav-tab">커뮤니티</a>
-      </nav>
+        <div class="top-bar__brand">
+            <a href="index.html" th:href="@{/}">
+                <span class="logo" aria-hidden="true">◇</span>
+                <span class="brand-name">Markets</span>
+            </a>
+        </div>
+        <nav class="main-nav" aria-label="주 메뉴">
+            <a th:href="@{/}" class="nav-tab is-active" aria-current="page">시장 지표</a>
+            <a th:href="@{/chart}" class="nav-tab">주식 차트</a>
+            <a th:href="@{/news}" class="nav-tab">뉴스 피드</a>
+            <a th:href="@{/community}" class="nav-tab">커뮤니티</a>
+        </nav>
 
         <div class="top-bar__actions">
             <button class="icon-btn">🔔</button>
-            <button class="icon-btn">👤</button>
+            <button class="icon-btn" onclick="location.href='/login'">👤</button>
             <button class="icon-btn" id="btn-theme">🌙</button>
         </div>
     </header>
 
     <main class="content">
-      <section class="view" id="view-markets">
-        <div class="page-head">
-          <h1>시장 지표</h1>
-          <p class="muted">국내외 주요 지수를 한눈에 확인합니다.</p>
-        </div>
-          <div class="indices-grid" id="indices-grid">
-              <div class="index-card" th:each="index : ${indices}">
-                  <div class="index-card__label" th:text="${index.label}">국내 · 한국</div>
+        <section class="view" id="view-markets">
+            <div class="page-head">
+                <h1>시장 지표</h1>
+                <p class="muted">국내외 주요 지수를 한눈에 확인합니다.</p>
+            </div>
 
-                  <div class="index-card__name" th:text="${index.name}">KOSPI</div>
+            <!-- 지표 그리드 -->
+            <div class="indices-grid" id="indices-grid">
+                <div class="index-card" th:each="index : ${indices}">
+                    <div class="index-card__label" th:text="${index.label}">국내 · 한국</div>
+                    <div class="index-card__name" th:text="${index.name}">KOSPI</div>
+                    <div class="index-card__value" th:text="${index.value}">5,000</div>
+                    <div th:class="|index-card__change ${index.isUp ? 'is-up' : 'is-down'}|"
+                         th:text="${index.change}">+0.50%</div>
+                </div>
+            </div>
 
-                  <div class="index-card__value" th:text="${index.value}">5,000</div>
+            <!-- ✨ 신규 추가: AI 브리핑 섹션 -->
+            <div class="section-block ai-briefing-section" style="margin-top: 2rem; margin-bottom: 2rem; padding: 1.5rem; border: 1px solid #333; border-radius: 8px; background-color: #1a1a1a;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2 style="margin: 0; font-size: 1.2rem;">🤖 AI 시장 종합 브리핑</h2>
+                    <button id="btn-ai-analyze" class="btn btn-primary">시장 분석하기</button>
+                </div>
+                <div id="ai-briefing-result" style="line-height: 1.6; color: #ccc;">
+                    버튼을 눌러 현재 시장 지표에 대한 AI의 실시간 분석을 받아보세요.
+                </div>
+            </div>
 
-                  <!-- isUp이 true이면 class="index-card__change is-up" css파일에서 is-up은 빨간색-->
-                  <div th:class="|index-card__change ${index.isUp ? 'is-up' : 'is-down'}|"
-                       th:text="${index.change}">
-                      +0.50%
-                  </div>
-
-                  <div class="index-card__meta">실시간 데이터 (네이버)</div>
-              </div>
-          </div>
-
-        <div class="section-block">
-          <div class="section-head">
-            <h2>관심 종목</h2>
-          </div>
-          <div class="watch-toolbar">
-            <input type="text" id="symbol-input" class="input" placeholder="종목명 또는 티커 입력" autocomplete="off" />
-            <button type="button" class="btn btn-primary" id="btn-add-symbol">추가</button>
-          </div>
-          <p id="watch-empty" class="empty-hint">관심 종목이 없습니다. 위에서 추가해 보세요.</p>
-          <ul id="watch-list" class="watch-list" aria-label="관심 종목 목록"></ul>
-        </div>
-      </section>
+        </section>
     </main>
 
     <footer class="footer">
-      <span>데모 UI · 데이터는 샘플입니다</span>
+        <span>모든 투자에 대한 책임은 투자자 본인에게 있습니다.</span>
     </footer>
-  </div>
+</div>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-  <script src="common.js"></script>
-  <script src="app-markets.js"></script>
+<script src="common.js"></script>
+<script src="app-markets.js"></script>
 
 </body>
 </html>
