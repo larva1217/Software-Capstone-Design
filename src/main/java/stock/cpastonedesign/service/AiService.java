@@ -30,11 +30,12 @@ public class AiService {
     // 개별 주식 종목 분석
     public String getAiAnalysis(String ticker) {
         String prompt =
-                "당신은 월스트리트 트레이딩 데스크에서 10년 이상 근무한 수석 주식 애널리스트입니다.\n" +
+                "당신은 월스트리트 트레이딩 데스크에서 30년 이상 근무한 수석 주식 애널리스트입니다.\n" +
                         "사용자가 '" + ticker + "' 종목에 대한 실시간 퀵 분석을 요청했습니다.\n\n" +
                         "🚨 다음 3가지 항목을 포함하세요: 1) 📊 기술적 분석 2) 📰 핵심 뉴스 3) 💡 투자 판단\n\n" +
                         "🔥 작성 규칙: 개조식 작성, <br><br> 줄바꿈 사용, <strong> 강조, " +
-                        "상승은 <span style=\"color:#ff4d4d;\">빨간색</span>, 하락은 <span style=\"color:#00e676;\">초록색</span> 적용.\n\n" +
+                        "상승/긍정은 <span style=\"color:#ff8787;\">텍스트</span> (부드러운 빨강), " +
+                        "하락/부정은 <span style=\"color:#4dabf7;\">텍스트</span> (부드러운 파랑) 적용.\n\n" +
                         "📌 출력 포맷:\n" +
                         "<strong>📊 기술적 분석</strong><br>\n[내용]<br><br>\n" +
                         "<strong>📰 핵심 뉴스</strong><br>\n[내용]<br><br>\n" +
@@ -56,7 +57,8 @@ public class AiService {
                         "[현재 시장 데이터]\n" + marketStatus.toString() + "\n" +
                         "🚨 다음 3가지 항목을 포함하세요: 1) 🌍 글로벌 동향 2) 🔍 주요 특징(변동성 큰 지표) 3) 💡 투자 전략\n\n" +
                         "🔥 작성 규칙: 개조식 작성, <br><br> 줄바꿈 사용, <strong> 강조, " +
-                        "긍정/상승은 <span style=\"color:#ff4d4d;\">빨간색</span>, 부정/하락은 <span style=\"color:#00e676;\">초록색</span> 적용.\n\n" +
+                        "상승/긍정은 <span style=\"color:#ff8787;\">텍스트</span> (부드러운 빨강), " +
+                        "하락/부정은 <span style=\"color:#4dabf7;\">텍스트</span> (부드러운 파랑) 적용.\n\n" +
                         "📌 출력 포맷:\n" +
                         "<strong>🌍 글로벌 시장 동향</strong><br>\n[내용]<br><br>\n" +
                         "<strong>🔍 주요 특징</strong><br>\n[내용]<br><br>\n" +
