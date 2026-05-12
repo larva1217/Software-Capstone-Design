@@ -42,26 +42,6 @@ function formatIndexValue(n) {
   return n.toLocaleString("ko-KR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-/*function renderIndices() {
-  const grid = document.getElementById("indices-grid");
-  if (!grid) return;
-
-  grid.innerHTML = SAMPLE_INDICES.map((idx) => {
-    const up = idx.changePct >= 0;
-    const sign = up ? "+" : "";
-    const cls = up ? "is-up" : "is-down";
-    return `
-      <article class="index-card" data-index-id="${idx.id}">
-        <div class="index-card__label">${idx.label} · ${idx.region}</div>
-        <div class="index-card__name">${idx.name}</div>
-        <div class="index-card__value">${formatIndexValue(idx.value)}</div>
-        <div class="index-card__change ${cls}">${sign}${idx.changePct.toFixed(2)}%</div>
-        <div class="index-card__meta">샘플 데이터</div>
-      </article>
-    `;
-  }).join("");
-}*/
-
 function escapeHtml(s) {
   const div = document.createElement("div");
   div.textContent = s;

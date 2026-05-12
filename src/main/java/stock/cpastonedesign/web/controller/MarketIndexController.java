@@ -32,13 +32,16 @@ public class MarketIndexController {
     @GetMapping("/api/stock/price")
     @ResponseBody
     public Map<String, Object> getStockPrice(@RequestParam String symbol) {
-        // 트레이딩뷰 심볼은 "NASDAQ:NVDA" 식으로 올 수 있으니 ":" 뒤만 잘라주는 처리가 필요
-        String cleanSymbol = symbol.contains(":") ? symbol.split(":")[1] : symbol;
-
-        double price = marketService.getRealTimePrice(cleanSymbol);
-
         Map<String, Object> response = new HashMap<>();
+
+        // 트레이딩뷰 심볼은 "NASDAQ:NVDA" 식으로 올 수 있으니 ":" 뒤만 잘라주는 처리가 필요
+        String Symbol = symbol.contains(":") ? symbol.split(":")[1] : symbol;
+
+        double price = marketService.getRealTimePrice(Symbol);
+
         response.put("currentPrice", price);
+
         return response;
     }
+
 }
