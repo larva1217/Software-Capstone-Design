@@ -33,9 +33,9 @@
         </nav>
 
         <div class="top-bar__actions">
-            <button class="icon-btn">🔔</button>
-            <button class="icon-btn">👤</button>
-            <button class="icon-btn">🌙</button>
+            <button type="button" class="icon-btn" id="btn-alarm" aria-label="알림">🔔</button>
+            <a th:href="@{/login}" class="icon-btn" aria-label="로그인">👤</a>
+            <button type="button" class="icon-btn" id="btn-theme" aria-label="테마 전환">🌙</button>
         </div>
     </header>
 
@@ -104,6 +104,7 @@
                     </p>
 
                     <form
+                            th:if="${loginUserId != null and post.author != null and post.author.id == loginUserId}"
                             th:action="@{/community/delete/{id}(id=${post.id})}"
                             method="post"
                             style="margin-top: 10px;"
