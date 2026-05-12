@@ -2,12 +2,13 @@ package stock.cpastonedesign.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import stock.cpastonedesign.service.AiService;
-import stock.cpastonedesign.web.dto.MarketDataDto;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController //html이 아니라 JSON을 반환하는 컨트롤러
@@ -17,25 +18,17 @@ public class AiController {
     @Autowired
     private AiService aiService;
 
-    //개별 주식 종목 분석
+    //GET /api/ai/analyze, 응답 타입 JSON, UTF-8
     @GetMapping(value = "/analyze", produces = "application/json; charset=UTF-8")
-    public Map<String, String> analyze(@RequestParam String ticker) {
+    public Map<String, String> analyze(@RequestParam String ticker) { // /api/ai/analyze?ticker=NVDA
+        // AI 서비스 호출
         String aiHtmlResult = aiService.getAiAnalysis(ticker);
 
+        // Map 객체를 리턴하면 @RestController 덕분에 자동으로 JSON으로 변환
         Map<String, String> response = new HashMap<>();
         response.put("analysisResult", aiHtmlResult);
 
         return response;
-    }
 
-    //국가 지수 및 시장 종합 분석
-    @PostMapping(value = "/analyze-market", produces = "application/json; charset=UTF-8")
-    public Map<String, String> analyzeMarket(@RequestBody List<MarketDataDto> marketDataList) {
-        String aiHtmlResult = aiService.getMarketBriefing(marketDataList);
-
-        Map<String, String> response = new HashMap<>();
-        response.put("analysisResult", aiHtmlResult);
-
-        return response;
     }
 }
