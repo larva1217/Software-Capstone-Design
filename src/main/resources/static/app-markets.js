@@ -6,8 +6,8 @@ async function fetchIndices() {
   return null;
 }*/
 
-window.stockViewApi = window.stockViewApi || {};
-window.stockViewApi.fetchIndices = fetchIndices;
+//window.stockViewApi = window.stockViewApi || {};
+//window.stockViewApi.fetchIndices = fetchIndices;
 
 const SAMPLE_INDICES = [
   { id: "kospi", label: "국내", name: "KOSPI", value: 2650.12, changePct: 0.42, region: "한국" },
@@ -41,26 +41,6 @@ function formatIndexValue(n) {
   if (n >= 10000) return n.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
   return n.toLocaleString("ko-KR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
-
-/*function renderIndices() {
-  const grid = document.getElementById("indices-grid");
-  if (!grid) return;
-
-  grid.innerHTML = SAMPLE_INDICES.map((idx) => {
-    const up = idx.changePct >= 0;
-    const sign = up ? "+" : "";
-    const cls = up ? "is-up" : "is-down";
-    return `
-      <article class="index-card" data-index-id="${idx.id}">
-        <div class="index-card__label">${idx.label} · ${idx.region}</div>
-        <div class="index-card__name">${idx.name}</div>
-        <div class="index-card__value">${formatIndexValue(idx.value)}</div>
-        <div class="index-card__change ${cls}">${sign}${idx.changePct.toFixed(2)}%</div>
-        <div class="index-card__meta">샘플 데이터</div>
-      </article>
-    `;
-  }).join("");
-}*/
 
 function escapeHtml(s) {
   const div = document.createElement("div");
@@ -135,4 +115,51 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("symbol-input")?.addEventListener("keydown", (e) => {
     if (e.key === "Enter") addSymbol();
   });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const btnAiAnalyze = document.getElementById('btn-ai-analyze');
+    const aiBriefingResult = document.getElementById('ai-briefing-result');
+
+    if(btnAiAnalyze) {
+        btnAiAnalyze.addEventListener('click', function() {
+            btnAiAnalyze.disabled = true;
+            btnAiAnalyze.innerText = "분석 중... ⏳";
+            aiBriefingResult.innerHTML = "시장에 흩어진 지표들을 모아 AI가 분석 중입니다. 잠시만 기다려주세요...";
+
+            const marketDataList = [];
+            const cards = document.querySelectorAll('.index-card');
+
+            cards.forEach(card => {
+                const name = card.querySelector('.index-card__name')?.innerText.trim() || "";
+                const price = card.querySelector('.index-card__value')?.innerText.trim() || "";
+                const changeRate = card.querySelector('.index-card__change')?.innerText.trim() || "";
+
+                if(name) {
+                    marketDataList.push({ name: name, price: price, changeRate: changeRate });
+                }
+            });
+
+            fetch('/api/ai/analyze-market', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(marketDataList)
+            })
+            .then(response => {
+                if(!response.ok) throw new Error("서버 연동 오류 발생");
+                return response.json();
+            })
+            .then(data => {
+                aiBriefingResult.innerHTML = data.analysisResult;
+            })
+            .catch(error => {
+                console.error('AI 분석 실패:', error);
+                aiBriefingResult.innerHTML = "<span style='color: #ff4d4d;'>서버와 통신하는 중 오류가 발생했습니다.</span>";
+            })
+            .finally(() => {
+                btnAiAnalyze.disabled = false;
+                btnAiAnalyze.innerText = "시장 분석하기";
+            });
+        });
+    }
 });
