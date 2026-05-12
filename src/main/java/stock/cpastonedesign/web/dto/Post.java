@@ -3,11 +3,19 @@ package stock.cpastonedesign.web.dto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+<<<<<<< HEAD
 import stock.cpastonedesign.domain.User; // 유저 엔티티 위치 연결
 
 @Getter
 @Setter
 @Entity // 이 클래스는 DB 테이블과 매핑됩니다.
+=======
+import stock.cpastonedesign.domain.User;
+
+@Getter
+@Setter
+@Entity
+>>>>>>> 4518b9e (커뮤니티 기능 및 로그인 기능 추가)
 public class Post {
 
     @Id
@@ -19,6 +27,7 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+<<<<<<< HEAD
     // ==========================================
     // ✨ 여기서부터가 유저 연동 핵심 코드입니다!
     // ==========================================
@@ -30,3 +39,12 @@ public class Post {
     public Post() {
     }
 }
+=======
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User author;
+
+    public Post() {
+    }
+}
+>>>>>>> 4518b9e (커뮤니티 기능 및 로그인 기능 추가)
