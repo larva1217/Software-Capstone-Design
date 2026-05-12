@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>회원가입 · Markets</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/styles.css}" />
+</head>
+<body>
+<div class="app">
+    <header class="top-bar">
+        <div class="top-bar__brand">
+            <a th:href="@{/}">
+                <span class="logo" aria-hidden="true">◇</span>
+                <span class="brand-name">Markets</span>
+            </a>
+        </div>
+        <nav class="main-nav" aria-label="주 메뉴">
+            <a th:href="@{/}" class="nav-tab">시장 지표</a>
+            <a th:href="@{/chart}" class="nav-tab">주식 차트</a>
+            <a th:href="@{/news}" class="nav-tab">뉴스 피드</a>
+            <a th:href="@{/community}" class="nav-tab">커뮤니티</a>
+        </nav>
+        <div class="top-bar__actions">
+            <button type="button" class="icon-btn" id="btn-alarm" aria-label="알림">🔔</button>
+            <a th:href="@{/login}" class="icon-btn" aria-label="로그인">👤</a>
+            <button type="button" class="icon-btn" id="btn-theme" aria-label="테마 전환">🌙</button>
+        </div>
+    </header>
+
+    <main class="content auth-page">
+        <div class="auth-card">
+            <div class="auth-card__head">
+                <h1 class="auth-card__title">회원가입</h1>
+                <p class="auth-card__lead muted">가입 후 모의투자 계정이 지급됩니다.</p>
+            </div>
+            <p id="auth-message" class="auth-message" role="alert" hidden></p>
+            <form id="form-signup" class="auth-form" novalidate>
+                <label class="auth-field">
+                    <span class="auth-field__label">아이디</span>
+                    <input class="input auth-field__input" type="text" name="username" id="username" autocomplete="username" required />
+                </label>
+                <label class="auth-field">
+                    <span class="auth-field__label">비밀번호</span>
+                    <input class="input auth-field__input" type="password" name="password" id="password" autocomplete="new-password" required minlength="1" />
+                </label>
+                <button type="submit" class="btn btn-primary auth-form__submit">가입하기</button>
+            </form>
+            <p class="auth-switch">
+                이미 계정이 있으신가요?
+                <a th:href="@{/login}" class="auth-switch__link">로그인</a>
+            </p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <span>모든 투자에 대한 책임은 투자자 본인에게 있습니다.</span>
+    </footer>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const API_SIGNUP = /*[[@{/api/users/signup}]]*/ '/api/users/signup';
+    const LOGIN_PAGE = /*[[@{/login}]]*/ '/login';
+    /*]]>*/
+</script>
+<script th:src="@{/common.js}"></script>
+<script th:src="@{/auth-pages.js}"></script>
+</body>
+</html>
