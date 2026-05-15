@@ -5,14 +5,15 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "users")
-@Getter @Setter
-@NoArgsConstructor
+@Entity //이 클래스는 DB테이블이다.
+@Table(name = "users") //DB테이블 이름 users
+@Getter
+@Setter
+@NoArgsConstructor //기본 생성자 자동 생성
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id //기본키
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //id를 DB가 자동으로 생성해라
     private Long id;
 
     private String username;
@@ -20,9 +21,9 @@ public class User {
 
     private double balance;
 
-
     public User(String username, double balance) {
         this.username = username;
         this.balance = balance;
     }
+
 }
