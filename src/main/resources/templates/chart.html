@@ -133,23 +133,7 @@
             <a th:href="@{/news}" class="nav-tab">뉴스 피드</a>
             <a th:href="@{/community}" class="nav-tab">커뮤니티</a>
         </nav>
-        <div class="top-bar__actions">
-            <button type="button" class="icon-btn" id="btn-alarm" aria-label="알림">🔔</button>
-            <a th:href="@{/login}" class="icon-btn" aria-label="로그인">👤</a>
-            <form id="logout-form"
-                  th:action="@{/logout}"
-                  method="post"
-                  style="display: inline;">
-
-                <button type="submit"
-                        class="icon-btn"
-                        aria-label="로그아웃"
-                        onclick="return checkLogout();">
-                    🚪
-                </button>
-            </form>
-            <button type="button" class="icon-btn" id="btn-theme" aria-label="테마 전환">🌙</button>
-        </div>
+        <div th:replace="~{fragments/header-actions :: header-actions}"></div>
     </header>
 
     <main class="content">
@@ -242,6 +226,10 @@
                 <div class="input-group">
                     <label>수량 (주)</label>
                     <input type="number" id="order-qty" value="1" min="1" />
+
+                    <div id="owned-qty-display" style="display: none; margin-top: 8px; font-size: 13px; color: #848e9c; text-align: right;">
+                        현재 보유 수량: <span id="owned-qty-value" style="color: #fff; font-weight: bold;">0</span> 주
+                    </div>
                 </div>
                 <div class="order-summary">
                     <span>총 주문금액</span>
@@ -279,7 +267,36 @@
 
 <script th:src="@{/common.js}"></script>
 <script th:src="@{/app-news.js}"></script>
+<script>
+    window.addEventListener('load', function () {
+        const btnUser = document.getElementById('btn-user');
+        const userMenuPopup = document.getElementById('user-menu-popup');
 
+        if (btnUser && userMenuPopup) {
+            // 1. 아이콘 클릭 시 팝업 열기/닫기 (토글)
+            btnUser.addEventListener('click', function (e) {
+                e.stopPropagation(); // document 클릭 이벤트로 번지는 것 차단
+
+                const isHidden = userMenuPopup.hasAttribute('hidden');
+                if (isHidden) {
+                    userMenuPopup.removeAttribute('hidden');
+                    btnUser.setAttribute('aria-expanded', 'true');
+                } else {
+                    userMenuPopup.setAttribute('hidden', '');
+                    btnUser.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            // 2. 팝업창 바깥의 다른 영역을 클릭하면 자동으로 팝업 닫기
+            document.addEventListener('click', function (e) {
+                if (!userMenuPopup.contains(e.target) && e.target !== btnUser) {
+                    userMenuPopup.setAttribute('hidden', '');
+                    btnUser.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+    });
+</script>
 <script>
     let tvWidget = null;
     let currentSymbol = "NASDAQ:NVDA";
@@ -438,6 +455,22 @@
             execBtn.dataset.side = side;
             execBtn.innerText = isBuy ? "매수하기" : "매도하기";
             execBtn.className = "btn-execute " + (isBuy ? "btn-buy" : "btn-sell");
+            const qtyDisplay = document.getElementById('owned-qty-display');
+            if (!isBuy) {
+                // 매도(Sell)일 때 보이게
+                qtyDisplay.style.display = 'block';
+                const ticker = currentSymbol.includes(':') ? currentSymbol.split(':')[1] : currentSymbol;
+
+                fetch(`/api/trade/quantity?ticker=${ticker}`)
+                    .then(res => res.json())
+                    .then(qty => {
+                        document.getElementById('owned-qty-value').innerText = qty;
+                    })
+                    .catch(err => console.error("보유 수량 조회 에러:", err));
+            } else {
+                // 매수(Buy)일 때는 다시 숨기기
+                qtyDisplay.style.display = 'none';
+            }
         }
         buyTab.onclick  = () => setSide('buy');
         sellTab.onclick = () => setSide('sell');

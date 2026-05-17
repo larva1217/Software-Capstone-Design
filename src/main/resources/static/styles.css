@@ -1,4 +1,3 @@
-/* ===== Theme ===== */
 :root {
   --bg: #f4f6f9;
   --bg-elevated: #ffffff;
@@ -128,10 +127,20 @@ body {
   cursor: not-allowed;
 }
 
+/* [보정] 상단바 우측 버튼 레이아웃 균형 조정 */
 .top-bar__actions {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* [추가] 유저 메뉴 컨테이너 - 로그인 전/후 공통 틀 유지 및 팝업 absolute 기준 설정 */
+.user-menu {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .icon-btn {
@@ -146,7 +155,9 @@ body {
   color: var(--text);
   cursor: pointer;
   box-shadow: var(--shadow);
-  transition: transform 0.12s, background 0.15s;
+  transition: transform 0.12s, background 0.15s, color 0.15s;
+  text-decoration: none; /* a 태그로 렌더링될 때 밑줄 방지 */
+  padding: 0;
 }
 
 .icon-btn:hover {
@@ -155,6 +166,57 @@ body {
 
 .icon-btn:active {
   transform: scale(0.96);
+}
+
+/* [추가] 유저 메뉴용 팝업창 스타일링 - 절대 좌표계를 활용해 상단바 높이를 깨뜨리지 않음 */
+.user-menu__popup {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 1000;
+  min-width: 180px;
+  padding: 1rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+
+/* 팝업 내부 요소 스타일 */
+.user-menu__label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0 0 0.25rem 0;
+  font-weight: 500;
+}
+
+.user-menu__name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 1rem 0;
+}
+
+.user-menu__form {
+  margin: 0;
+}
+
+.user-menu__logout {
+  width: 100%;
+  padding: 0.5rem;
+  background: var(--negative); /* 혹은 기본 강조색인 var(--accent)로 변경 가능 */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.user-menu__logout:hover {
+  opacity: 0.9;
 }
 
 #btn-theme .theme-icon--moon {

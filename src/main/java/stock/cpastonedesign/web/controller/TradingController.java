@@ -49,4 +49,16 @@ public class TradingController {
         tradingService.sellStock(userId, ticker, quantity, price);
         return ResponseEntity.ok(ticker + " 매도 성공!");
     }
+    //프론트엔드에서 "몇 주 가지고 있어?"라고 물어볼 때 대답해주는 API
+    @org.springframework.web.bind.annotation.GetMapping("/quantity")
+    public ResponseEntity<Double> getOwnedQuantity(@RequestParam String ticker, jakarta.servlet.http.HttpSession session) {
+        Long userId = (Long) session.getAttribute("loginUser");
+        if (userId == null) {
+            return ResponseEntity.ok(0.0); // 비로그인이면 0주
+        }
+
+        // TradingService에 수량 조회 요청
+        return ResponseEntity.ok(tradingService.getOwnedQuantity(userId, ticker));
+    }
+
 }

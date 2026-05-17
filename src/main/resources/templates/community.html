@@ -32,23 +32,7 @@
             <a th:href="@{/community}" class="nav-tab is-active">커뮤니티</a>
         </nav>
 
-        <div class="top-bar__actions">
-            <button type="button" class="icon-btn" id="btn-alarm" aria-label="알림">🔔</button>
-            <a th:href="@{/login}" class="icon-btn" aria-label="로그인">👤</a>
-            <form id="logout-form"
-                  th:action="@{/logout}"
-                  method="post"
-                  style="display: inline;">
-
-                <button type="submit"
-                        class="icon-btn"
-                        aria-label="로그아웃"
-                        onclick="return checkLogout();">
-                    🚪
-                </button>
-            </form>
-            <button type="button" class="icon-btn" id="btn-theme" aria-label="테마 전환">🌙</button>
-        </div>
+        <div th:replace="~{fragments/header-actions :: header-actions}"></div>
     </header>
 
 
@@ -100,6 +84,13 @@
                         th:each="post : ${posts}"
                         style="border-bottom: 1px solid #2a2e39; padding: 20px;"
                 >
+
+                    <p class="community-author"
+                       th:if="${post.author != null}"
+                       th:text="${post.author.username}"
+                       style="margin: 0 0 6px; font-size: 0.875rem; color: var(--accent); font-weight: 600;">
+                        닉네임
+                    </p>
 
                     <h3
                             th:text="${post.title}"

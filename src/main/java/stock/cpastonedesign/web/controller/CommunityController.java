@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ public class CommunityController {
     private final UserRepository userRepository;
 
     @GetMapping
+    @Transactional(readOnly = true)
     public String community(Model model, HttpSession session) {
         // ID 기준 내림차순으로 게시글 목록 조회
         model.addAttribute("posts", postRepository.findAll(Sort.by(Sort.Direction.DESC, "id")));

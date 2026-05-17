@@ -25,23 +25,7 @@
             <a th:href="@{/community}" class="nav-tab">커뮤니티</a>
         </nav>
 
-        <div class="top-bar__actions">
-            <button type="button" class="icon-btn" id="btn-alarm" aria-label="알림">🔔</button>
-            <a th:href="@{/login}" class="icon-btn" aria-label="로그인">👤</a>
-            <form id="logout-form"
-                  th:action="@{/logout}"
-                  method="post"
-                  style="display: inline;">
-
-                <button type="submit"
-                        class="icon-btn"
-                        aria-label="로그아웃"
-                        onclick="return checkLogout();">
-                    🚪
-                </button>
-            </form>
-            <button type="button" class="icon-btn" id="btn-theme" aria-label="테마 전환">🌙</button>
-        </div>
+        <div th:replace="~{fragments/header-actions :: header-actions}"></div>
     </header>
 
     <main class="content">
@@ -83,6 +67,37 @@
 
 <script src="common.js"></script>
 <script src="app-markets.js"></script>
+
+<script>
+    window.addEventListener('load', function () {
+        const btnUser = document.getElementById('btn-user');
+        const userMenuPopup = document.getElementById('user-menu-popup');
+
+        if (btnUser && userMenuPopup) {
+            // 1. 아이콘 클릭 시 팝업 열기/닫기 (토글)
+            btnUser.addEventListener('click', function (e) {
+                e.stopPropagation(); // document 클릭 이벤트로 번지는 것 차단
+
+                const isHidden = userMenuPopup.hasAttribute('hidden');
+                if (isHidden) {
+                    userMenuPopup.removeAttribute('hidden');
+                    btnUser.setAttribute('aria-expanded', 'true');
+                } else {
+                    userMenuPopup.setAttribute('hidden', '');
+                    btnUser.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            // 2. 팝업창 바깥의 다른 영역을 클릭하면 자동으로 팝업 닫기
+            document.addEventListener('click', function (e) {
+                if (!userMenuPopup.contains(e.target) && e.target !== btnUser) {
+                    userMenuPopup.setAttribute('hidden', '');
+                    btnUser.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+    });
+</script>
 
 </body>
 </html>

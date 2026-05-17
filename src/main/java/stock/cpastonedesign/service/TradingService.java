@@ -91,4 +91,10 @@ public class TradingService {
                 .build();
         transactionRepository.save(transaction);
     }
+    // 보유 수량만 쏙 빼오는 메서드
+    public double getOwnedQuantity(Long userId, String ticker) {
+        return portfolioRepository.findByUserIdAndTickerSymbol(userId, ticker)
+                .map(Portfolio::getQuantity)
+                .orElse(0.0);
+    }
 }

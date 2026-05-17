@@ -21,14 +21,30 @@ function toggleTheme() {
   localStorage.setItem("stock-view-theme", next);
 }
 
+function bindUserMenu() {
+  const btn = document.getElementById("btn-user");
+  const popup = document.getElementById("user-menu-popup");
+  if (!btn || !popup) return;
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const open = popup.hidden;
+    popup.hidden = !open;
+    btn.setAttribute("aria-expanded", String(open));
+  });
+
+  document.addEventListener("click", (e) => {
+    if (popup.hidden) return;
+    if (!popup.contains(e.target) && !btn.contains(e.target)) {
+      popup.hidden = true;
+      btn.setAttribute("aria-expanded", "false");
+    }
+  });
+}
+
 function bindHeaderActions() {
   document.getElementById("btn-theme")?.addEventListener("click", toggleTheme);
-  document.getElementById("btn-alarm")?.addEventListener("click", () => {
-    showToast("알람 설정은 추후 연동 예정입니다.");
-  });
-  document.getElementById("btn-login")?.addEventListener("click", () => {
-    showToast("로그인은 추후 연동 예정입니다.");
-  });
+  bindUserMenu();
 }
 
 function initCommonPage() {
@@ -37,7 +53,7 @@ function initCommonPage() {
 }
 
 if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initCommonPage);
+  document.addEventListener("DOMContentLoaded", initCommonPage);
 } else {
-    initCommonPage();
+  initCommonPage();
 }
