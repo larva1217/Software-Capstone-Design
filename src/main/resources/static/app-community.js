@@ -1,34 +1,36 @@
 async function fetchCommunityPosts() {
-  return null;
+    return null;
 }
 
 window.stockViewApi = window.stockViewApi || {};
 window.stockViewApi.fetchCommunityPosts = fetchCommunityPosts;
 
+
 const SAMPLE_POSTS = [
-  { id: 1, author: "asd", content: "asdasd", likes: 12 },
-  { id: 2, author: "qwe", content: "qweqwe", likes: 5 },
+    { id: 1, author: "asd", content: "asdasd", likes: 12 },
+    { id: 2, author: "qwe", content: "qweqwe", likes: 5 },
 ];
 
+
 function escapeHtml(s) {
-  const div = document.createElement("div");
-  div.textContent = s;
-  return div.innerHTML;
+    const div = document.createElement("div");
+    div.textContent = s;
+    return div.innerHTML;
 }
 
 function renderPostList(container) {
-  const list = container.querySelector(".post-list");
-  if (!list) return;
+    const list = container.querySelector(".post-list");
+    if (!list) return;
 
-  list.innerHTML = SAMPLE_POSTS.map(
-    (post) => `
-    <div class="post-card" data-post-id="${post.id}">
-      <div class="post-author">${escapeHtml(post.author)}</div>
-      <div class="post-content">${escapeHtml(post.content)}</div>
-      <div class="post-footer">👍 ${post.likes}</div>
-    </div>
-  `
-  ).join("");
+        list.innerHTML = SAMPLE_POSTS.map(
+        (post) => `
+        <div class="post-card" data-post-id="${post.id}">
+            <div class="post-author">${escapeHtml(post.author)}</div>
+            <div class="post-content">${escapeHtml(post.content)}</div>
+            <div class="post-footer">👍 ${post.likes}</div>
+        </div>
+        `
+    ).join("");
 }
 
 function initCommunity() {

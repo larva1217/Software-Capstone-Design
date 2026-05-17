@@ -18,19 +18,24 @@ import stock.cpastonedesign.domain.User;
 public class Post {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //기본키
     private Long id;
 
+    //글 제목
     private String title;
 
+    //글 내용
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    // 여러 개의 게시글(Many)은 한 명의 작성자(One)에게 속함
+    // 여러 개의 게시글은 한 명의 작성자에게 속함
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User author;
-
+    
+    //생성자
     public Post() {
+        
     }
+
 }

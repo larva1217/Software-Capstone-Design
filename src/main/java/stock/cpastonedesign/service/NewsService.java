@@ -31,11 +31,11 @@ public class NewsService {
             //<li class="sa_item">
             Elements items = doc.select(".sa_item");
 
-            for (int i = 0; i < 10; i++) { // 상위 10개만 추출
+            for (int i = 0; i < 20; i++) { // 상위 10개만 추출
                 Element item = items.get(i);
                 Map<String, String> data = new HashMap<>();
 
-                //class="sa_text_title _NLOG_IMPRESSION"
+                //<class="sa_text_title _NLOG_IMPRESSION">
                 Element titleAnchor = item.selectFirst(".sa_text_title"); //제목, 링크
 
                 //<div class="sa_text_lede">
@@ -53,6 +53,7 @@ public class NewsService {
                 }
             }
         } catch (IOException e) {
+            //예외 처리
             e.printStackTrace();
         }
 

@@ -7,8 +7,12 @@ import lombok.Setter;
 @Setter
 public class MarketDataDto {
 
-    private String name;        // 지수 이름
-    private String price;       // 현재 가격
-    private String changeRate;  // 등락률
+    //지수 이름
+    private String name;
 
+    //현재 가격
+    private String price;
+
+    //등락률
+    private String changeRate;
 }

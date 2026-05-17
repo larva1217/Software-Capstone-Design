@@ -31,6 +31,13 @@ public class MarketService {
             indices.add(extractYahooIndex("%5EIXIC", "나스닥 종합", "미국 · 지수"));
             indices.add(extractYahooIndex("%5EGSPC", "S&P 500", "미국 · 지수"));
 
+
+            indices.add(extractYahooIndex("%5EN225", "니케이 225", "일본 · 지수"));
+            indices.add(extractYahooIndex("%5EGDAXI", "DAX", "독일 · 지수"));
+            indices.add(extractYahooIndex("%5EFCHI", "CAC 40", "프랑스 · 지수"));
+            indices.add(extractYahooIndex("%5EHSI", "항셍지수", "홍콩 · 지수"));
+            indices.add(extractYahooIndex("000001.SS", "상하이 종합", "중국 · 지수"));
+
             //시장 지표 (환율, 유가, 금)
             Document marketDoc = Jsoup.connect("https://finance.naver.com/marketindex/").get();
             indices.add(extractMarketIndex(marketDoc, "미국 USD", "환율 · 시장"));

@@ -9,6 +9,7 @@ async function fetchIndices() {
 //window.stockViewApi = window.stockViewApi || {};
 //window.stockViewApi.fetchIndices = fetchIndices;
 
+//임시 데이터 목록
 const SAMPLE_INDICES = [
   { id: "kospi", label: "국내", name: "KOSPI", value: 2650.12, changePct: 0.42, region: "한국" },
   { id: "kosdaq", label: "국내", name: "KOSDAQ", value: 842.33, changePct: -0.18, region: "한국" },
@@ -20,6 +21,7 @@ const SAMPLE_INDICES = [
   { id: "dax", label: "유럽", name: "DAX", value: 19200.0, changePct: 0.19, region: "독일" },
 ];
 
+//관심 종목을 저장할 때 쓸 이름표
 const WATCH_STORAGE_KEY = "stock-view-pins";
 
 function loadPins() {

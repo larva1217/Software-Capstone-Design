@@ -14,6 +14,7 @@ import java.util.Map;
 @RequestMapping("/api/ai") //이 클래스 안에 모든 API는 "/api/ai"로 시작
 public class AiController {
 
+    //필드 주입
     @Autowired
     private AiService aiService;
 

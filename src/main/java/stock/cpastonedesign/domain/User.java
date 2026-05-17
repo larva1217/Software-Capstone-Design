@@ -16,11 +16,16 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY) //id를 DB가 자동으로 생성해라
     private Long id;
 
+    //로그인 아이디
     private String username;
+    
+    //로그인 비밀번호
     private String password;
 
+    //현재 보유 현금
     private double balance;
 
+    //생성자
     public User(String username, double balance) {
         this.username = username;
         this.balance = balance;

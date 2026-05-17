@@ -17,8 +17,12 @@ public class NewsController {
 
     @GetMapping("/news")
     public String getNewsPage(Model model){
+        //NewsService 메서드 호출하여 네이버 경제 뉴스 상위 10개 리스트를 가져옴
         List<Map<String,String>> headlines = newsService.getHeadlines();
+
         model.addAttribute("headlines", headlines);
+
         return "news";
     }
+
 }

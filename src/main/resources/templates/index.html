@@ -61,8 +61,9 @@
     </main>
 
     <footer class="footer">
-        <span>모든 투자에 대한 책임은 투자자 본인에게 있습니다.</span>
+        <span>모든 투자는 투자자 본인의 판단과 책임하에 이루어져야 하며, 투자원금의 보장 또는 수익을 보장하지 않습니다.</span>
     </footer>
+
 </div>
 
 <script src="common.js"></script>
@@ -74,7 +75,7 @@
         const userMenuPopup = document.getElementById('user-menu-popup');
 
         if (btnUser && userMenuPopup) {
-            // 1. 아이콘 클릭 시 팝업 열기/닫기 (토글)
+            //아이콘 클릭 시 팝업 열기/닫기
             btnUser.addEventListener('click', function (e) {
                 e.stopPropagation(); // document 클릭 이벤트로 번지는 것 차단
 
@@ -88,7 +89,7 @@
                 }
             });
 
-            // 2. 팝업창 바깥의 다른 영역을 클릭하면 자동으로 팝업 닫기
+            //팝업창 바깥의 다른 영역을 클릭하면 자동으로 팝업 닫기
             document.addEventListener('click', function (e) {
                 if (!userMenuPopup.contains(e.target) && e.target !== btnUser) {
                     userMenuPopup.setAttribute('hidden', '');

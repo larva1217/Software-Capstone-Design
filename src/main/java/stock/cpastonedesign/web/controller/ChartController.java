@@ -23,25 +23,26 @@ public class ChartController {
     @GetMapping("/chart")
     public String chartPage(Model model, HttpSession session) {
 
-        // 1. 현재 로그인한 유저의 ID 가져오기
+        //현재 로그인한 유저의 ID 가져오기
         Long loginUserId = (Long) session.getAttribute("loginUser");
 
         if (loginUserId != null) {
-            // 2. [로그인 상태] 진짜 내 정보와 내 주식 지갑 가져오기
+            //내 정보와 내 주식 지갑 가져오기
             User user = userRepository.findById(loginUserId)
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
             List<Portfolio> portfolioList = portfolioRepository.findAllByUserId(loginUserId);
 
             model.addAttribute("user", user);
             model.addAttribute("portfolios", portfolioList);
 
         } else {
-            // 3. [비회원 상태] 에러 방지용 가짜 유저(잔고 0원)와 텅 빈 주식 지갑 넘기기
+            //비회원 상태, 에러 방지용 가짜 유저와 빈 주식 지갑 넘기기
             User guestUser = new User();
-            guestUser.setBalance(0.0); // 비회원은 잔고 0원 노출
+            guestUser.setBalance(0.0); //비회원은 잔고 0원 노출
 
             model.addAttribute("user", guestUser);
-            model.addAttribute("portfolios", new ArrayList<>()); // 빈 주식 목록
+            model.addAttribute("portfolios", new ArrayList<>()); //빈 주식 목록
         }
 
         return "chart";

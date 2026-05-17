@@ -39,6 +39,7 @@ public class AuthPageController {
     //로그아웃
     @PostMapping("/logout")
     public String logout(HttpSession session, RedirectAttributes ra) {
+        //이미 로그아웃 상태
         if (session.getAttribute("loginUser") == null) {
             ra.addFlashAttribute("alertMsg", "이미 로그아웃 상태입니다.");
             return "redirect:/";

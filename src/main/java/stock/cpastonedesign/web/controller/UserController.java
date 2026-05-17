@@ -41,19 +41,19 @@ public class UserController {
     public ResponseEntity<String> login(@RequestBody UserLoginDto request, HttpServletRequest httpRequest) {
         HttpSession session;
         try {
-            // 1. UserService에게 검사 시키기
+            //UserService에게 검사 시키기
             User loginUser = userService.login(request.getUsername(), request.getPassword());
 
-            // 2. 검사 통과. 세션 발급
+            //검사 통과. 세션 발급
             session = httpRequest.getSession();
 
-            // 로그인 정보 저장
+            //로그인 정보 저장
             session.setAttribute("loginUser", loginUser.getId());
 
             return ResponseEntity.ok(loginUser.getUsername() + "님, 환영합니다!");
 
         } catch (RuntimeException e) {
-            // 비밀번호가 틀렸거나 없는 아이디면 쫓아냄
+            //비밀번호가 틀렸거나 없는 아이디면 쫓아냄
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

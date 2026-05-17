@@ -20,62 +20,67 @@ public class TradingService {
     private final PortfolioRepository portfolioRepository;
     private final TransactionRepository transactionRepository;
 
-    //매수
+    //주식 매수
     @Transactional
     public void buyStock(Long userId, String ticker, double quantity, long price) {
+        //DB에서 사용자 정보 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
+        //총 매수 금액 계산
         long totalCost = (long) (price * quantity);
 
-        // 1. 잔액 체크
+        //잔액 체크
         if (user.getBalance() < totalCost) {
             throw new RuntimeException("잔액이 부족합니다. 현재 잔액: " + user.getBalance());
         }
 
-        // 2. 현금 차감
+        //현금 차감
         user.setBalance(user.getBalance() - totalCost);
 
-        // 3. 포트폴리오 업데이트
+        //포트폴리오 업데이트
         Portfolio portfolio = portfolioRepository.findByUserIdAndTickerSymbol(userId, ticker)
                 .orElse(new Portfolio(user, ticker, 0.0, 0L));
 
+        //새로운 평단가와 보유 수량 갱싱
         portfolio.updatePosition(price, quantity); // 평단가와 수량 계산
         portfolioRepository.save(portfolio);
 
-        // 4. 거래 기록 저장
+        //거래 기록 생성 및 저장
         saveTransaction(user, ticker, "BUY", price, quantity);
     }
 
-    //매도
+    //주식 매도
     @Transactional
     public void sellStock(Long userId, String ticker, double quantity, long price) {
+        //DB에서 사용자 정보 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        // 1. 보유 수량 체크
+        //해당 종목을 보유하고 있는지 확인
         Portfolio portfolio = portfolioRepository.findByUserIdAndTickerSymbol(userId, ticker)
                 .orElseThrow(() -> new RuntimeException("보유하지 않은 종목입니다."));
 
+        //매도하려는 수량이 실제 보유 수량보다 많은지 확인
         if (portfolio.getQuantity() < quantity) {
             throw new RuntimeException("보유 수량이 부족합니다. 현재 수량: " + portfolio.getQuantity());
         }
 
-        // 2. 포트폴리오 업데이트 (수량 감소)
+        //포트폴리오 업데이트 
         portfolio.setQuantity(portfolio.getQuantity() - quantity);
 
-        // 수량이 0이 되면 포트폴리오에서 삭제하거나 그대로 둠
+        //수량이 0이 되면 포트폴리오에서 삭제하거나 그대로 둠
         if (portfolio.getQuantity() <= 0) {
             portfolioRepository.delete(portfolio);
         } else {
             portfolioRepository.save(portfolio);
         }
 
-        // 3. 현금 증가 (매도 금액만큼 balance 추가)
+        //현금 증가 (매도 금액만큼 balance 추가)
         long totalGain = (long) (price * quantity);
         user.setBalance(user.getBalance() + totalGain);
 
-        // 4. 거래 기록 저장
+        //거래 기록 생성 및 저장
         saveTransaction(user, ticker, "SELL", price, quantity);
     }
 
@@ -91,10 +96,12 @@ public class TradingService {
                 .build();
         transactionRepository.save(transaction);
     }
-    // 보유 수량만 쏙 빼오는 메서드
+
+    //특정 사용자가 보유한 특정 종목의 수량만 조회
     public double getOwnedQuantity(Long userId, String ticker) {
         return portfolioRepository.findByUserIdAndTickerSymbol(userId, ticker)
                 .map(Portfolio::getQuantity)
                 .orElse(0.0);
     }
+
 }
