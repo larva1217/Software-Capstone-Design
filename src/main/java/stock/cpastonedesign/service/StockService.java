@@ -12,7 +12,7 @@ public class StockService {
 
     private final RestTemplate restTemplate;
 
-    // 본인 API KEY 넣기
+    //API KEY
     private final String API_KEY = "5VBPMFA5PKFHF0CY";
 
     public double getCurrentPrice(String ticker) {

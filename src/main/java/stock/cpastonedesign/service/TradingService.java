@@ -84,7 +84,7 @@ public class TradingService {
         saveTransaction(user, ticker, "SELL", price, quantity);
     }
 
-    // 공통 거래 기록 저장 메서드
+    //공통 거래 기록 저장 메서드
     private void saveTransaction(User user, String ticker, String type, double price, double quantity) {
         Transaction transaction = Transaction.builder()
                 .user(user)

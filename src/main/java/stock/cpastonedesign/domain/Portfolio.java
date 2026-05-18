@@ -47,11 +47,11 @@ public class Portfolio {
     //추가 매수 시 평균 매수가를 계산
     public void updatePosition(double newPrice, double newQuantity) {
 
-        double totalCost = (this.averagePrice * this.quantity)
-                + (newPrice * newQuantity);
+        double totalCost = (this.averagePrice * this.quantity)+(newPrice * newQuantity);
 
         this.quantity += newQuantity;
         this.averagePrice = totalCost / this.quantity;
+
     }
     
 }

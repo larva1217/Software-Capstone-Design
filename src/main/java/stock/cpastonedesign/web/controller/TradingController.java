@@ -36,7 +36,7 @@ public class TradingController {
         //세션에 로그인한 사용자 ID 조회
         Long userId = (Long) session.getAttribute("loginUser");
 
-        //로그인 안 했으면 400에러 처리
+        //로그인 안 했으면 400 에러 처리
         if (userId == null) {
             return ResponseEntity.badRequest().body("로그인이 필요합니다! 먼저 로그인을 해주세요.");
         }

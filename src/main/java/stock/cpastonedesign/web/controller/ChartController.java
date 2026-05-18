@@ -59,4 +59,5 @@ public class ChartController {
 
         return "chart";
     }
+
 }
