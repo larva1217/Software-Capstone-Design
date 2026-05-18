@@ -26,10 +26,18 @@ public class Portfolio {
     private Double quantity;
 
     //평균 매수가
-    private Long averagePrice;
+    private Double averagePrice;
+
+    //수익률
+    @Transient
+    private Double profitRate;
+
+    // 현재가
+    @Transient
+    private Double currentPrice;
 
     //생성자
-    public Portfolio(User user, String tickerSymbol, Double quantity, Long averagePrice) {
+    public Portfolio(User user, String tickerSymbol, Double quantity, Double averagePrice) {
         this.user = user;
         this.tickerSymbol = tickerSymbol;
         this.quantity = quantity;
@@ -37,10 +45,13 @@ public class Portfolio {
     }
 
     //추가 매수 시 평균 매수가를 계산
-    public void updatePosition(long newPrice, double newQuantity) {
-        long totalCost = (long)(this.averagePrice * this.quantity) + (long)(newPrice * newQuantity);
+    public void updatePosition(double newPrice, double newQuantity) {
+
+        double totalCost = (this.averagePrice * this.quantity)
+                + (newPrice * newQuantity);
+
         this.quantity += newQuantity;
-        this.averagePrice = (long) (totalCost / this.quantity);
+        this.averagePrice = totalCost / this.quantity;
     }
     
 }

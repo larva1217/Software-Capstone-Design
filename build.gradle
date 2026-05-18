@@ -35,6 +35,7 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
     implementation 'com.yahoofinance-api:YahooFinanceAPI:3.17.0'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.json:json:20240303'
 
 }
 

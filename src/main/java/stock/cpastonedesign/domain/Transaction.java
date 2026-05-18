@@ -28,7 +28,7 @@ public class Transaction {
     private String type;
     
     //거래 가격
-    private Long price;
+    private Double price;
     
     //거래 수량
     private Double quantity;

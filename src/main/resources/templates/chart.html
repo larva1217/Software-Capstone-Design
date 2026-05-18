@@ -252,8 +252,10 @@
                     <td><strong th:text="${p.tickerSymbol}">NVDA</strong></td>
                     <td><span th:text="${p.quantity}">0</span> 주</td>
                     <td>$ <span th:text="${#numbers.formatDecimal(p.averagePrice, 1, 'COMMA', 2, 'POINT')}">0</span></td>
-                    <td>$ <span class="current-price" th:text="${#numbers.formatDecimal(p.averagePrice, 1, 'COMMA', 2, 'POINT')}">0</span></td>
-                    <td class="text-up">+0.00%</td>
+                    <td>$ <span class="current-price" th:text="${#numbers.formatDecimal(p.currentPrice, 1, 'COMMA', 2, 'POINT')}"></span></td>
+                    <td th:class="${p.profitRate >= 0 ? 'text-up' : 'text-down'}"
+                        th:text="${#numbers.formatDecimal(p.profitRate, 1, 'COMMA', 2, 'POINT')} + '%'">
+                    </td>
                     <td>$ <span th:text="${#numbers.formatDecimal(p.quantity * p.averagePrice, 1, 'COMMA', 2, 'POINT')}">0</span></td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(portfolios)}">
@@ -415,21 +417,68 @@
         fetch(`/api/stock/price?symbol=${ticker}`)
             .then(res => res.json())
             .then(data => {
-                if (data && data.currentPrice) {
-                    const price = parseFloat(data.currentPrice).toFixed(2);
-                    document.getElementById('order-price').value = price;
-                    document.getElementById('sym-price').innerText = `$ ${price}`;
+                // API 응답 구조에 맞춰 유연하게 매핑 (기존 코드 보완)
+                const price = data?.currentPrice ?? data?.data?.currentPrice ?? data?.price;
+                const change = data?.changePercent ?? data?.data?.changePercent ?? data?.change;
 
-                    if (data.changePercent != null) {
-                        const ch = parseFloat(data.changePercent);
+                if (price != null) {
+                    const formatted = parseFloat(price).toFixed(2);
+
+                    // 1. 주문창 및 상단 현재가 UI 반영
+                    if(document.getElementById('order-price')) document.getElementById('order-price').value = formatted;
+                    if(document.getElementById('sym-price')) document.getElementById('sym-price').innerText = `$ ${formatted}`;
+
+                    // 2. 등락률 UI 반영
+                    if (change != null) {
+                        const ch = parseFloat(change);
                         const chEl = document.getElementById('sym-change');
-                        chEl.innerText = (ch >= 0 ? "▲ +" : "▼ ") + ch.toFixed(2) + "%";
-                        chEl.className = "sym-change " + (ch >= 0 ? "text-up" : "text-down");
+                        if (chEl) {
+                            chEl.innerText = (ch >= 0 ? "▲ +" : "▼ ") + ch.toFixed(2) + "%";
+                            chEl.className = "sym-change " + (ch >= 0 ? "text-up" : "text-down");
+                        }
                     }
+
+                    // 3. 포트폴리오 테이블 반영 (★ 누락되었던 현재가 출력 로직 추가)
+                    document.querySelectorAll(".portfolio-table tbody tr").forEach(row => {
+                        const symbolCell = row.querySelector("td strong");
+                        if (!symbolCell) return;
+
+                        const rowTicker = symbolCell.innerText.trim();
+
+                        if (rowTicker === ticker) {
+                            // [추가] 테이블 내의 현재가 span을 찾아 값을 넣어줍니다.
+                            const currentPriceEl = row.querySelector(".current-price");
+                            if (currentPriceEl) {
+                                currentPriceEl.innerText = formatted;
+                            }
+
+                            const avgPriceText = row.children[2].innerText
+                                .replace("$", "")
+                                .replace(",", "")
+                                .trim();
+
+                            const avgPrice = parseFloat(avgPriceText);
+
+                            if (avgPrice > 0) {
+                                const profitRate = ((price - avgPrice) / avgPrice) * 100;
+                                const profitCell = row.children[4];
+                                if (profitCell) {
+                                    profitCell.innerText = (profitRate >= 0 ? "+" : "") + profitRate.toFixed(2) + "%";
+                                    profitCell.className = profitRate >= 0 ? "text-up" : "text-down";
+                                }
+                            }
+                        }
+                    });
+
                     updateTotal();
+                } else {
+                    console.error("API로부터 가격 데이터를 읽지 못했습니다. 응답 데이터 구조를 확인하세요:", data);
                 }
             })
-            .catch(err => { console.warn("시세 연동 중:", err); updateTotal(); });
+            .catch(err => {
+                console.warn("시세 연동 중 에러 발생:", err);
+                updateTotal();
+            });
     }
 
     function renderAll(symbol) {
@@ -483,7 +532,7 @@
         execBtn.onclick = () => {
             const ticker = currentSymbol.includes(':') ? currentSymbol.split(':')[1] : currentSymbol;
             const quantity = document.getElementById('order-qty').value;
-            const price    = Math.floor(document.getElementById('order-price').value);
+            const price = parseFloat(document.getElementById('order-price').value);
             const endpoint = execBtn.dataset.side === 'buy' ? "/api/trade/buy" : "/api/trade/sell";
 
             fetch(`${endpoint}?ticker=${ticker}&quantity=${quantity}&price=${price}`, { method: 'POST' })

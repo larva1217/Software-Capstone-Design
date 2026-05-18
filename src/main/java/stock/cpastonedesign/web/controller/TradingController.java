@@ -13,7 +13,7 @@ public class TradingController {
     private final TradingService tradingService;
 
     @PostMapping("/buy")
-    public ResponseEntity<String> buy(@RequestParam String ticker, @RequestParam double quantity, @RequestParam long price, jakarta.servlet.http.HttpSession session) {
+    public ResponseEntity<String> buy(@RequestParam String ticker, @RequestParam double quantity, @RequestParam double price, jakarta.servlet.http.HttpSession session) {
 
         //세션에 로그인한 사용자 ID 조회
         Long userId = (Long) session.getAttribute("loginUser");
@@ -31,7 +31,7 @@ public class TradingController {
     }
 
     @PostMapping("/sell")
-    public ResponseEntity<String> sell(@RequestParam String ticker, @RequestParam double quantity, @RequestParam long price, jakarta.servlet.http.HttpSession session) {
+    public ResponseEntity<String> sell(@RequestParam String ticker, @RequestParam double quantity, @RequestParam double price, jakarta.servlet.http.HttpSession session) {
 
         //세션에 로그인한 사용자 ID 조회
         Long userId = (Long) session.getAttribute("loginUser");

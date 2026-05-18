@@ -22,7 +22,7 @@ public class TradingService {
 
     //주식 매수
     @Transactional
-    public void buyStock(Long userId, String ticker, double quantity, long price) {
+    public void buyStock(Long userId, String ticker, double quantity, double price) {
         //DB에서 사용자 정보 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
@@ -40,7 +40,7 @@ public class TradingService {
 
         //포트폴리오 업데이트
         Portfolio portfolio = portfolioRepository.findByUserIdAndTickerSymbol(userId, ticker)
-                .orElse(new Portfolio(user, ticker, 0.0, 0L));
+                .orElse(new Portfolio(user, ticker, 0.0, 0.0));
 
         //새로운 평단가와 보유 수량 갱싱
         portfolio.updatePosition(price, quantity); // 평단가와 수량 계산
@@ -52,7 +52,7 @@ public class TradingService {
 
     //주식 매도
     @Transactional
-    public void sellStock(Long userId, String ticker, double quantity, long price) {
+    public void sellStock(Long userId, String ticker, double quantity, double price) {
         //DB에서 사용자 정보 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
@@ -85,7 +85,7 @@ public class TradingService {
     }
 
     // 공통 거래 기록 저장 메서드
-    private void saveTransaction(User user, String ticker, String type, long price, double quantity) {
+    private void saveTransaction(User user, String ticker, String type, double price, double quantity) {
         Transaction transaction = Transaction.builder()
                 .user(user)
                 .tickerSymbol(ticker)
