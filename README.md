@@ -60,35 +60,68 @@
 - 외부 주식 데이터 API 연동  
 
 ---
-## 📂 파일 구조 및 위치 설명
+## 📂 프로젝트 구조 
 
-### 🔹 Backend (서버 로직)
-- 위치: `src/main/java/stock/cpastonedesign`
+### 🔹 Backend & Frontend 
+- **위치:** `src/main/java/stock/cpastonedesign` 및 `src/main/resources`
 
-#### 📁 domain (엔티티)
+```text
+📁 cpastonedesign  [ Backend ]
+├── 📁 config
+│   └── 📄 AppConfig.java
+├── 📁 domain
+│   ├── 📄 Portfolio.java
+│   ├── 📄 Transaction.java
+│   └── 📄 User.java
+├── 📁 repository
+│   ├── 📄 PortfolioRepository.java
+│   ├── 📄 PostRepository.java
+│   ├── 📄 TransactionRepository.java
+│   └── └── 📄 UserRepository.java
+├── 📁 service
+│   ├── 📄 AiService.java
+│   ├── 📄 MarketService.java
+│   ├── 📄 NewsService.java
+│   ├── 📄 StockService.java
+│   ├── 📄 TradingService.java
+│   └── 📄 UserService.java
+└── 📁 web
+    ├── 📁 controller
+    │   ├── 📄 AiController.java
+    │   ├── 📄 AuthPageController.java
+    │   ├── 📄 ChartController.java
+    │   ├── 📄 CommunityController.java
+    │   ├── 📄 GlobalModelAdvice.java
+    │   ├── 📄 MarketIndexController.java
+    │   ├── 📄 NewsController.java
+    │   ├── 📄 TradingController.java
+    │   └── 📄 UserController.java
+    └── 📁 dto
+        ├── 📄 MarketDataDto.java
+        ├── 📄 OrderRequestDto.java
+        ├── 📄 Post.java
+        ├── 📄 UserLoginDto.java
+        └── 📄 UserSignupDto.java
 
-#### 📁 repository (DB 접근)
-
-#### 📁 service (비즈니스 로직)
-
-#### 📁 web
-
-#### 🚀 메인 실행 클래스
-- `CpastonedesignApplication`
-
----
-
-### 🔹 Frontend (화면 구성)
-- 위치: `src/main/resources`
-
-#### 📁 templates (HTML)
-
-#### 📁 static (정적 파일)
-
----
-
-### 🔹 Database (DB 설정)
-- 위치: `src/main/resources`
-
+📁 resources  [ Frontend & Config ]
+├── 📁 static  
+│   ├── 📄 app-community.js
+│   ├── 📄 app-markets.js
+│   ├── 📄 app-news.js
+│   ├── 📄 auth-pages.js
+│   ├── 📄 common.js
+│   └── 📄 styles.css
+├── 📁 templates 
+│   ├── 📁 fragments
+│   │   └── 📄 header-actions.html
+│   ├── 📄 chart.html
+│   ├── 📄 community.html
+│   ├── 📄 index.html
+│   ├── 📄 login.html
+│   ├── 📄 news.html
+│   └── 📄 signup.html
+├── 📄 application.properties  
+├── 📄 data.sql
+└── 📄 schema.sql
 
 
