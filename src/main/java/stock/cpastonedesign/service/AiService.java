@@ -1,5 +1,6 @@
 package stock.cpastonedesign.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -17,7 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service //비즈니스 로직을 처리하는 서비스
+@Service
+@Slf4j
 public class AiService {
 
     //AI가 주고받는 데이터를 자바가 읽을 수 있게
@@ -30,6 +32,9 @@ public class AiService {
 
     //개별 주식 종목 분석
     public String getAiAnalysis(String ticker) {
+
+        log.info("AI 개별 종목 분석 요청 : {}", ticker);
+
         String prompt =
                 "당신은 월스트리트 트레이딩 데스크에서 30년 이상 근무한 수석 주식 애널리스트입니다.\n" +
                         "사용자가 '" + ticker + "' 종목에 대한 실시간 퀵 분석을 요청했습니다.\n\n" +
@@ -46,6 +51,9 @@ public class AiService {
 
     //국가 지수 및 시장 종합 분석
     public String getMarketBriefing(List<MarketDataDto> marketDataList) {
+
+        log.info("시장 종합 브리핑 요청");
+
         //전달받은 시장 데이터를 프롬프트에 삽입할 문자열로 변환
         StringBuilder marketStatus = new StringBuilder();
         for (MarketDataDto data : marketDataList) {
@@ -69,6 +77,8 @@ public class AiService {
 
     //실제로 제미나이에게 물어보고 답변을 받아오는 기능
     private String callGeminiApi(String prompt) {
+
+        log.info("Gemini API 호출 시작");
 
         //제미나이 주소
         String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
@@ -99,10 +109,10 @@ public class AiService {
             //AI가 말한 답변 글자만 리턴하기
             return rootNode.path("candidates").get(0).path("content").path("parts").get(0).path("text").asText();
         } catch (HttpClientErrorException.TooManyRequests e) {
-            //API 호출 제한 초과 시 예외 처리
+            log.error("Gemini API 제한 초과", e);
             return "잠시 후 다시 시도해주세요 (API 제한 초과)";
         } catch (Exception e) {
-            //기타 모든 예외
+            log.error("Gemini 분석 중 오류 발생", e);
             return "분석 중 오류가 발생했습니다." + e.getMessage();
         }
     }

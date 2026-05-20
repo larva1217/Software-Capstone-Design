@@ -1,5 +1,6 @@
 package stock.cpastonedesign.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;    
 import org.jsoup.nodes.Element;    
@@ -13,10 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class NewsService {
 
     public List<Map<String, String>> getHeadlines() {
-
+        log.info("뉴스 가져오기");
         //List->뉴스 여러개
         //Map->뉴스 제목, 링크, 언론사 등
         List<Map<String, String>> headlines = new ArrayList<>();
@@ -54,7 +56,7 @@ public class NewsService {
             }
         } catch (IOException e) {
             //예외 처리
-            e.printStackTrace();
+            log.error("뉴스 조회 실패 ", e);
         }
 
         return headlines;

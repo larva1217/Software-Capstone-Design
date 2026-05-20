@@ -2,6 +2,7 @@ package stock.cpastonedesign.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import stock.cpastonedesign.domain.Portfolio;
 import stock.cpastonedesign.domain.Transaction;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TradingService {
 
     private final UserRepository userRepository;
@@ -23,6 +25,7 @@ public class TradingService {
     //주식 매수
     @Transactional
     public void buyStock(Long userId, String ticker, double quantity, double price) {
+        log.info("주식 매수");
         //DB에서 사용자 정보 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
@@ -53,6 +56,7 @@ public class TradingService {
     //주식 매도
     @Transactional
     public void sellStock(Long userId, String ticker, double quantity, double price) {
+        log.info("주식 매도");
         //DB에서 사용자 정보 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
@@ -86,6 +90,7 @@ public class TradingService {
 
     //공통 거래 기록 저장 메서드
     private void saveTransaction(User user, String ticker, String type, double price, double quantity) {
+        log.info("거래 기록 저장");
         Transaction transaction = Transaction.builder()
                 .user(user)
                 .tickerSymbol(ticker)
@@ -97,8 +102,9 @@ public class TradingService {
         transactionRepository.save(transaction);
     }
 
-    //특정 사용자가 보유한 특정 종목의 수량만 조회
+    //사용자가 보유한 특정 종목의 수량만 조회
     public double getOwnedQuantity(Long userId, String ticker) {
+        log.info("보유 수량 조회");
         return portfolioRepository.findByUserIdAndTickerSymbol(userId, ticker)
                 .map(Portfolio::getQuantity)
                 .orElse(0.0);

@@ -21,6 +21,7 @@ public class ChartController {
     private final UserRepository userRepository;
     private final PortfolioRepository portfolioRepository;
     private final StockService stockService;
+
     private Double profitRate;
 
     @GetMapping("/chart")

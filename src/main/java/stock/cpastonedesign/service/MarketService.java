@@ -1,5 +1,6 @@
 package stock.cpastonedesign.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class MarketService {
 
     //코스피,나스닥,환율 등 여러 정보를 리스트로 묶어서 반환
@@ -45,7 +47,7 @@ public class MarketService {
             indices.add(extractMarketIndex(marketDoc, "국제 금", "금속 · 원자재"));
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("시장 지수 데이터 조회 실패", e);
         }
         return indices;
     }
@@ -186,9 +188,9 @@ public class MarketService {
                 return Double.parseDouble(matcher.group(1)); //group(1) : ()안에 있는 값
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("실시간 주가 조회 실패 : {}", symbol, e);
         }
-        return 124.58; // 실패 시 마지막 NVDA 종가
+        return 124.58;
     }
 
     //symbol:야후에서 사용하는 종목코드
@@ -239,7 +241,7 @@ public class MarketService {
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
+                    log.error("{} 지수 조회 실패", name, e);
             }
 
         return createErrorMap(name, label);
