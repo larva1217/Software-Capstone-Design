@@ -67,26 +67,26 @@
 
 ```text
 📁 cpastonedesign  [ Backend ]
-├── 📁 config
+├── 📁 config (프로젝트 환경 설정 관리)
 │   └── 📄 AppConfig.java
-├── 📁 domain
+├── 📁 domain (DB 테이블과 연결되는 Entity 객체)
 │   ├── 📄 Portfolio.java
 │   ├── 📄 Transaction.java
 │   └── 📄 User.java
-├── 📁 repository
+├── 📁 repository (데이터베이스 처리)
 │   ├── 📄 PortfolioRepository.java
 │   ├── 📄 PostRepository.java
 │   ├── 📄 TransactionRepository.java
 │   └── └── 📄 UserRepository.java
-├── 📁 service
+├── 📁 service (비즈니스 로직 처리)
 │   ├── 📄 AiService.java
 │   ├── 📄 MarketService.java
 │   ├── 📄 NewsService.java
 │   ├── 📄 StockService.java
 │   ├── 📄 TradingService.java
 │   └── 📄 UserService.java
-└── 📁 web
-    ├── 📁 controller
+└── 📁 web (웹 요청 및 응답 처리 계층)
+    ├── 📁 controller (사용자 요청 URL 처리)
     │   ├── 📄 AiController.java
     │   ├── 📄 AuthPageController.java
     │   ├── 📄 ChartController.java
@@ -96,7 +96,7 @@
     │   ├── 📄 NewsController.java
     │   ├── 📄 TradingController.java
     │   └── 📄 UserController.java
-    └── 📁 dto
+    └── 📁 dto (데이터 전달 전용 객체)
         ├── 📄 MarketDataDto.java
         ├── 📄 OrderRequestDto.java
         ├── 📄 Post.java
@@ -104,15 +104,15 @@
         └── 📄 UserSignupDto.java
 
 📁 resources  [ Frontend & Config ]
-├── 📁 static  
+├── 📁 static (CSS 및 JavaScript 정적 파일)
 │   ├── 📄 app-community.js
 │   ├── 📄 app-markets.js
 │   ├── 📄 app-news.js
 │   ├── 📄 auth-pages.js
 │   ├── 📄 common.js
 │   └── 📄 styles.css
-├── 📁 templates 
-│   ├── 📁 fragments
+├── 📁 templates (HTML 템플릿)
+│   ├── 📁 fragments (공통 HTML 조각)
 │   │   └── 📄 header-actions.html
 │   ├── 📄 chart.html
 │   ├── 📄 community.html
