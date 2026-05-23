@@ -38,13 +38,32 @@ public class AiService {
         String prompt =
                 "당신은 월스트리트 트레이딩 데스크에서 30년 이상 근무한 수석 주식 애널리스트입니다.\n" +
                         "사용자가 '" + ticker + "' 종목에 대한 실시간 퀵 분석을 요청했습니다.\n\n" +
-                        "다음 3가지 항목을 포함하세요: 1)기술적 분석 2)핵심 뉴스 3)투자 판단\n\n" +
-                        "작성 규칙: 개조식 작성, <br><br> 줄바꿈 사용, <strong> 강조, " +
-                        "상승은 <span style=\"color:#ff4d4d;\">빨간색</span>, 하락은 <span style=\"color:#00e676;\">초록색</span> 적용.\n\n" +
+
+                        "다음 3가지 항목을 반드시 포함하세요.\n" +
+                        "1) 기술적 분석\n" +
+                        "2) 핵심 뉴스\n" +
+                        "3) 투자 판단\n\n" +
+
+                        "작성 규칙:\n" +
+                        "- 반드시 HTML 형식으로 작성\n" +
+                        "- Markdown(*, -, #) 사용 금지\n" +
+                        "- 각 문장은 <br> 태그로 줄바꿈\n" +
+                        "- 문단 사이는 <br><br> 사용\n" +
+                        "- 제목은 <strong> 태그 사용\n" +
+                        "- 상승 내용은 <span style=\"color:#ff4d4d;\">빨간색</span>\n" +
+                        "- 하락 내용은 <span style=\"color:#00e676;\">초록색</span>\n\n" +
+
                         "📌 출력 포맷:\n" +
-                        "<strong>📊 기술적 분석</strong><br>\n[내용]<br><br>\n" +
-                        "<strong>📰 핵심 뉴스</strong><br>\n[내용]<br><br>\n" +
-                        "<strong>💡 투자 판단</strong><br>\n<strong>[매수/관망/주의]</strong>: [이유]";
+                        "<strong>📊 기술적 분석</strong><br>\n" +
+                        "• 내용<br>\n" +
+                        "• 내용<br><br>\n" +
+
+                        "<strong>📰 핵심 뉴스</strong><br>\n" +
+                        "• 내용<br>\n" +
+                        "• 내용<br><br>\n" +
+
+                        "<strong>💡 투자 판단</strong><br>\n" +
+                        "<strong>[매수/관망/주의]</strong>: 이유";
 
         return callGeminiApi(prompt);
     }
