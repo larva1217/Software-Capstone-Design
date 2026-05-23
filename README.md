@@ -1,10 +1,14 @@
 # 📊 소프트웨어 캡스톤 디자인  
+
 ## 주식 차트 기반 모의 투자 웹 서비스
 
-### 👨‍💻 팀 정보
+### 👨‍💻 프로젝트 정보
 - 팀명 : S2L
-- 팀원 : 신재민, 이건희, 이한
-
+- 팀원 : 신재민, 이건희, 이한석
+- 학교명 : 한림대학교
+- 학과 : 소프트웨어학부
+- 개발 기간 : 2026.03.03 ~ 2026.06.22
+  
 ---
 
 ## 📌 프로젝트 개요
@@ -19,12 +23,11 @@
 ## 🎯 개발 목표
 - 실제 주식 데이터를 기반으로 한 모의 투자 환경 제공  
 - 사용자가 투자 의사결정 과정을 직접 경험할 수 있도록 지원  
-- 투자 결과 분석을 통해 전략 개선 가능  
 
 ---
 
 ## ✨ 프로젝트 특징
-- AI 기반 시장 분석 및 투자 의견 제공
+- Google Gemini API 기반 시장 분석 및 투자 의견 제공
 - 실제 주식 데이터를 활용한 실시간 모의 투자 환경 구현
 - TradingView 차트를 통한 직관적인 데이터 시각화
 
@@ -84,66 +87,25 @@
 
 ## 📂 프로젝트 구조 
 
-### 🔹 Backend & Frontend 
-- **위치:** `src/main/java/stock/cpastonedesign` 및 `src/main/resources`
+## 📂 프로젝트 구조
 
 ```text
-📁 cpastonedesign  [ Backend ]
-├── 📁 config (프로젝트 환경 설정 관리)
-│   └── 📄 AppConfig.java
-├── 📁 domain (DB 테이블과 연결되는 Entity 객체)
-│   ├── 📄 Portfolio.java
-│   ├── 📄 Transaction.java
-│   └── 📄 User.java
-├── 📁 repository (데이터베이스 처리)
-│   ├── 📄 PortfolioRepository.java
-│   ├── 📄 PostRepository.java
-│   ├── 📄 TransactionRepository.java
-│   └── 📄 UserRepository.java
-├── 📁 service (비즈니스 로직 처리)
-│   ├── 📄 AiService.java
-│   ├── 📄 MarketService.java
-│   ├── 📄 NewsService.java
-│   ├── 📄 StockService.java
-│   ├── 📄 TradingService.java
-│   └── 📄 UserService.java
-└── 📁 web (웹 요청 및 응답 처리 계층)
-    ├── 📁 controller (사용자 요청 URL 처리)
-    │   ├── 📄 AiController.java
-    │   ├── 📄 AuthPageController.java
-    │   ├── 📄 ChartController.java
-    │   ├── 📄 CommunityController.java
-    │   ├── 📄 GlobalModelAdvice.java
-    │   ├── 📄 MarketIndexController.java
-    │   ├── 📄 NewsController.java
-    │   ├── 📄 TradingController.java
-    │   └── 📄 UserController.java
-    └── 📁 dto (데이터 전달 전용 객체)
-        ├── 📄 MarketDataDto.java
-        ├── 📄 OrderRequestDto.java
-        ├── 📄 Post.java
-        ├── 📄 UserLoginDto.java
-        └── 📄 UserSignupDto.java
-
-📁 resources  [ Frontend & Config ]
-├── 📁 static (CSS 및 JavaScript 정적 파일)
-│   ├── 📄 app-community.js
-│   ├── 📄 app-markets.js
-│   ├── 📄 app-news.js
-│   ├── 📄 auth-pages.js
-│   ├── 📄 common.js
-│   └── 📄 styles.css
-├── 📁 templates (HTML 템플릿)
-│   ├── 📁 fragments (공통 HTML)
-│   │   └── 📄 header-actions.html
-│   ├── 📄 chart.html
-│   ├── 📄 community.html
-│   ├── 📄 index.html
-│   ├── 📄 login.html
-│   ├── 📄 news.html
-│   └── 📄 signup.html
-├── 📄 application.properties  
-├── 📄 data.sql
-└── 📄 schema.sql
-
+📁 src
+├── 📁 main
+│   ├── 📁 java/stock/cpastonedesign
+│   │   ├── 📁 config        # 프로젝트 환경 설정
+│   │   ├── 📁 domain        # Entity 클래스
+│   │   ├── 📁 repository    # DB 접근 계층
+│   │   ├── 📁 service       # 비즈니스 로직
+│   │   └── 📁 web
+│   │       ├── 📁 controller  # 요청 및 응답 처리
+│   │       └── 📁 dto         # 데이터 전달 객체
+│   │
+│   └── 📁 resources
+│       ├── 📁 static        # CSS / JavaScript
+│       ├── 📁 templates     # HTML 템플릿
+│       ├── 📄 schema.sql
+│       ├── 📄 data.sql
+│       └── 📄 application.properties
+```
 
