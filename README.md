@@ -8,7 +8,7 @@
 - 학교명 : 한림대학교
 - 학과 : 소프트웨어학부
 - 개발 기간 : 2026.03.03 ~ 2026.06.22
-  
+- 시연 동영상 : https://drive.google.com/drive/folders/1SNkBu0CcBFB6DtWLirVDvGS49D4URN9s?usp=sharing
 ---
 
 ## 📌 프로젝트 개요
